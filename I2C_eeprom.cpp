@@ -58,7 +58,7 @@ I2C_eeprom::I2C_eeprom(const uint8_t deviceAddress, const unsigned int deviceSiz
     }
     else if(deviceSize <= 8192 * 8)
     {
-        this->isAddressSizeTwoWorks = true;
+        this->_isAddressSizeTwoWorks = true;
         this->_pageSize = 32;
     }
     else if(deviceSize <= 65536 * 8)
