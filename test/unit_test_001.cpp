@@ -56,7 +56,7 @@ unittest(test_new_operator)
 
 unittest(test_constructor)
 {
-  I2C_eeprom EE(48);
+  I2C_eeprom EE(0x50);
   EE.begin();
   
   

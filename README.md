@@ -20,14 +20,14 @@ The interface is pretty straightforward
 - **setBlock(address, value, length)** e.g. use to clear I2C EEPROM
 - **readByte(address)** - read a single byte from a given address
 - **readBlock(address, buffer, length)**
+- **updateByte(address, value)** write a single byte, but only if changed.
 - **determineSize()**
 
 
 ## Limitation
 
 The library does not offer multiple EEPROMS as one 
-continuous storage device. 
-
+continuous storage device.
 
 ## Operational
 
