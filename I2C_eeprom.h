@@ -60,7 +60,6 @@ public:
 
   int      determineSize();
 
-
 private:
   uint8_t  _deviceAddress;
   uint32_t _lastWrite;     // for waitEEReady
