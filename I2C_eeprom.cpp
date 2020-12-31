@@ -1,36 +1,37 @@
 //
 //    FILE: I2C_eeprom.cpp
 //  AUTHOR: Rob Tillaart
-// VERSION: 1.3.0
+// VERSION: 1.3.1
 // PURPOSE: Arduino Library for external I2C EEPROM 24LC256 et al.
 //     URL: https://github.com/RobTillaart/I2C_EEPROM.git
 //
 // HISTORY:
-// 0.1.00 - 2011-01-21 initial version
-// 0.1.01 - 2011-02-07 added setBlock function
-// 0.2.00 - 2011-02-11 fixed 64 bit boundary bug
-// 0.2.01 - 2011-08-13 _readBlock made more robust + return value
-// 1.0.00 - 2013-06-09 support for Arduino 1.0.x
-// 1.0.01 - 2013-11-01 fixed writeBlock bug, refactor
-// 1.0.02 - 2013-11-03 optimize internal buffers, refactor
-// 1.0.03 - 2013-11-03 refactor 5 millis() write-latency
-// 1.0.04 - 2013-11-03 fix bug in readBlock, moved waitEEReady()
-//                     -> more efficient.
-// 1.0.05 - 2013-11-06 improved waitEEReady(),
-//                     added determineSize()
-// 1.1.00 - 2013-11-13 added begin() function (Note breaking interface)
-//                     use faster block Wire.write()
-//                     int casting removed
-// 1.2.00 - 2014-05-21 Added support for Arduino DUE ( thanks to Tyler F.)
-// 1.2.01 - 2014-05-21 Refactoring
-// 1.2.02 - 2015-03-06 stricter interface
-// 1.2.03 - 2015-05-15 bugfix in _pageBlock & example (thanks ifreislich )
-// 1.2.4    2017-04-19 remove timeout - issue #63
-// 1.2.5    2017-04-20 refactor the removed timeout (Thanks to Koepel)
-// 1.2.6    2019-02-01 fix issue #121
-// 1.2.7    2019-09-03 fix issue #113 and #128
-// 1.3.0    2020-06-19 refactor; removed pre 1.0 support; added ESP32 support.
-//
+// 0.1.00 - 2011-01-21  initial version
+// 0.1.01 - 2011-02-07  added setBlock function
+// 0.2.00 - 2011-02-11  fixed 64 bit boundary bug
+// 0.2.01 - 2011-08-13  _readBlock made more robust + return value
+// 1.0.00 - 2013-06-09  support for Arduino 1.0.x
+// 1.0.01 - 2013-11-01  fixed writeBlock bug, refactor
+// 1.0.02 - 2013-11-03  optimize internal buffers, refactor
+// 1.0.03 - 2013-11-03  refactor 5 millis() write-latency
+// 1.0.04 - 2013-11-03  fix bug in readBlock, moved waitEEReady()
+//                      -> more efficient.
+// 1.0.05 - 2013-11-06  improved waitEEReady(),
+//                      added determineSize()
+// 1.1.00 - 2013-11-13  added begin() function (Note breaking interface)
+//                      use faster block Wire.write()
+//                      int casting removed
+// 1.2.00 - 2014-05-21  Added support for Arduino DUE ( thanks to Tyler F.)
+// 1.2.01 - 2014-05-21  Refactoring
+// 1.2.02 - 2015-03-06  stricter interface
+// 1.2.03 - 2015-05-15  bugfix in _pageBlock & example (thanks ifreislich )
+// 1.2.4    2017-04-19  remove timeout - issue #63
+// 1.2.5    2017-04-20  refactor the removed timeout (Thanks to Koepel)
+// 1.2.6    2019-02-01  fix issue #121
+// 1.2.7    2019-09-03  fix issue #113 and #128
+// 1.3.0    2020-06-19  refactor; removed pre 1.0 support; added ESP32 support.
+// 1.3.1    2020-12-22  arduino-ci + unit tests + updateByte()
+
 
 #include <I2C_eeprom.h>
 
@@ -134,6 +135,14 @@ uint16_t I2C_eeprom::readBlock(const uint16_t memoryAddress, uint8_t* buffer, co
   return rv;
 }
 
+
+int I2C_eeprom::updateByte(const uint16_t memoryAddress, const uint8_t data)
+{
+  if (data == readByte(memoryAddress)) return 0;
+  return writeByte(memoryAddress, data);
+}
+  
+  
 // returns 64, 32, 16, 8, 4, 2, 1, 0
 // 0 is smaller than 1K
 int I2C_eeprom::determineSize()

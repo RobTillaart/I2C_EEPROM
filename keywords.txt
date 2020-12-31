@@ -10,5 +10,6 @@ setBlock	KEYWORD2
 readBlock	KEYWORD2
 writeBlock	KEYWORD2
 determineSize	KEYWORD2
+updateByte	KEYWORD2
 
 # Constants (LITERAL1)

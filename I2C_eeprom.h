@@ -2,17 +2,17 @@
 //
 //    FILE: I2C_eeprom.h
 //  AUTHOR: Rob Tillaart
-// VERSION: 1.3.0
+// VERSION: 1.3.1
 // PURPOSE: Arduino Library for external I2C EEPROM 24LC256 et al.
 //     URL: https://github.com/RobTillaart/I2C_EEPROM.git
 //
 // HISTORY: See I2C_eeprom.cpp
 
 
-#include "Wire.h"
 #include "Arduino.h"
+#include "Wire.h"
 
-#define I2C_EEPROM_VERSION "1.3.0"
+#define I2C_EEPROM_VERSION "1.3.1"
 
 // The DEFAULT page size. This is overriden if you use the second constructor.
 // I2C_EEPROM_PAGESIZE must be multiple of 2 e.g. 16, 32 or 64
@@ -47,19 +47,22 @@ public:
   void begin();
 
   // writes a byte to memaddr
-  int writeByte(const uint16_t memoryAddress, const uint8_t value);
+  int      writeByte(const uint16_t memoryAddress, const uint8_t value);
   // writes length bytes from buffer to EEPROM
-  int writeBlock(const uint16_t memoryAddress, const uint8_t* buffer, const uint16_t length);
+  int      writeBlock(const uint16_t memoryAddress, const uint8_t* buffer, const uint16_t length);
   // set length bytes in the EEPROM to the same value.
-  int setBlock(const uint16_t memoryAddress, const uint8_t value, const uint16_t length);
+  int      setBlock(const uint16_t memoryAddress, const uint8_t value, const uint16_t length);
 
   // returns the value stored in memaddr
   uint8_t  readByte(const uint16_t memoryAddress);
   // reads length bytes into buffer
   uint16_t readBlock(const uint16_t memoryAddress, uint8_t* buffer, const uint16_t length);
 
-  int      determineSize();
+  // updates a byte at memory address, writes only if there is a new value.
+  // return 0 if data is same or written OK, error code otherwise.
+  int      updateByte(const uint16_t memoryAddress, const uint8_t value);
 
+  int      determineSize();
 
 private:
   uint8_t  _deviceAddress;
