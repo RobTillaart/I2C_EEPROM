@@ -56,7 +56,7 @@ class I2C_eeprom_cyclic_store
 	* exclude the remaining pages from being used.
         * @return true if initialization succeeds, false otherwise
         */
-        bool begin(I2C_eeprom & eeprom, uint16_t pageSize, uint16_t totalPages)
+        bool begin(I2C_eeprom & eeprom, uint8_t pageSize, uint16_t totalPages)
         {
             _eeprom = &eeprom;
             _pageSize = pageSize;
