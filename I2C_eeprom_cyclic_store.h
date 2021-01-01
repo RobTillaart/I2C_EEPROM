@@ -1,6 +1,4 @@
 #pragma once
-#ifndef CYCLICACCESS_H
-#define CYCLICACCESS_H
 //
 //    FILE: I2C_eeprom_cyclic_access.h
 //  AUTHOR: Tomas Hübner
@@ -236,4 +234,3 @@ class I2C_eeprom_cyclic_store
         }
 };
 
-#endif // CYCLICACCESS_H

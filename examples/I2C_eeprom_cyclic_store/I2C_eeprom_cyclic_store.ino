@@ -5,6 +5,7 @@
 // PURPOSE: Simple example of how to use cyclic storage.
 //
 
+#include <I2C_eeprom.h>
 #include <I2C_eeprom_cyclic_store.h>
 
 #define MEMORY_SIZE 0x2000 // Total capacity of the EEPROM
