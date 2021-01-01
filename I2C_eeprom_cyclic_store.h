@@ -109,8 +109,6 @@ class I2C_eeprom_cyclic_store
             if(_isEmpty)
                 return false;
 
-            Serial.println("Reading "+String(sizeof(T))+" bytes from eeprom");
-
             return _eeprom->readBlock((_currentSlot*_bufferPages*_pageSize)+sizeof(_currentVersion), (uint8_t *) buffer, sizeof(T)) == sizeof(T);
         }
 
@@ -158,8 +156,6 @@ class I2C_eeprom_cyclic_store
 
             memcpy(tmp, &_currentVersion, sizeof(_currentVersion));
             memcpy(tmp+sizeof(_currentVersion), buffer, sizeof(T));
-
-            Serial.println("Writing "+String(buffer_length)+" bytes to eeprom");
 
             auto success = _eeprom->writeBlock(_currentSlot*_bufferPages*_pageSize, tmp, buffer_length) == 0;
 
