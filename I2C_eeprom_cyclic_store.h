@@ -61,8 +61,8 @@ class I2C_eeprom_cyclic_store
             _eeprom = &eeprom;
             _pageSize = pageSize;
             _totalPages = totalPages;
-            _bufferSize = sizeof(uint32_t)+sizeof(T);
-            _bufferPages = _bufferSize/_pageSize+(_bufferSize%pageSize ? 1 : 0);
+            auto bufferSize = sizeof(uint32_t)+sizeof(T);
+            _bufferPages = bufferSize/_pageSize+(bufferSize%_pageSize ? 1 : 0);
 
             return (_bufferPages < _totalPages) && initialize();
         };
@@ -166,9 +166,8 @@ class I2C_eeprom_cyclic_store
         }   
 
     private:
-        uint16_t _pageSize;
+        uint8_t _pageSize;
         uint16_t _bufferPages;
-        uint16_t _bufferSize;
         uint16_t _totalPages;
         uint16_t _currentSlot;
         uint32_t _currentVersion;
