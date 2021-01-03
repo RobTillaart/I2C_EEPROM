@@ -181,15 +181,15 @@ public:
       * 
       * @param[out] slots The number of slots used to write the data buffer.
       * @param[out] writeCounter The total number of write to the eeprom since the last format (or first use).
-      * @return True if the instance is initialized and the eeprom is not blank.
+      * @return True if the instance is initialized, false otherwise.
       */
     bool getMetrics(uint16_t &slots, uint32_t &writeCounter)
     {
-        if(!_isInitialized || _isEmpty)
+        if(!_isInitialized)
             return false;
 
         slots = _totalPages / _bufferPages;
-        writeCounter = _currentVersion+1;
+        writeCounter = _isEmpty ? 0 : _currentVersion+1;
 
         return true;
     }
