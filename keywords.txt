@@ -19,5 +19,6 @@ updateByte	KEYWORD2
 format	KEYWORD2
 read	KEYWORD2
 write	KEYWORD2
+getMetrics	KEYWORD2
 
 # Constants (LITERAL1)
