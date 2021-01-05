@@ -23,6 +23,7 @@ The interface is pretty straightforward
 - **updateByte(address, value)** write a single byte, but only if changed.
 - **determineSize()**
 
+The **I2C_eeprom_cyclic_store** interface is documented [here](README_cyclic_store.md)
 
 ## Limitation
 
