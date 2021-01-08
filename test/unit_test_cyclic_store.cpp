@@ -1,5 +1,5 @@
 //
-//    FILE: unit_test_002.cpp
+//    FILE: unit_test_cyclic_store.cpp
 //  AUTHOR: Tomas Hübner
 //    DATE: 2021-01-06
 // PURPOSE: unit test for the I2C_eeprom_cyclic_store class of the I2C_EEPROM library
