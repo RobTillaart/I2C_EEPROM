@@ -23,6 +23,10 @@
 // 1 byte for eeprom register address is available in txbuffer
 #define I2C_TWIBUFFERSIZE  30
 
+#ifndef UNIT_TEST_FRIEND
+#define UNIT_TEST_FRIEND
+#endif
+
 class I2C_eeprom
 {
 public:
@@ -84,6 +88,8 @@ private:
   uint8_t  _ReadBlock(const uint16_t memoryAddress, uint8_t* buffer, const uint8_t length);
 
   void     _waitEEReady();
+
+  UNIT_TEST_FRIEND;
 };
 
 // -- END OF FILE --
