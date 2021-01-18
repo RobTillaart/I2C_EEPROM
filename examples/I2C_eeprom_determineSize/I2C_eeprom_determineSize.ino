@@ -33,7 +33,7 @@ void setup()
   delay(10);
 
   start = micros();
-  int size = ee.determineSize();  // optional true as param
+  int size = ee.determineSize(true);  // optional true as param
   diff = micros() - start;
   Serial.print("TIME: ");
   Serial.print(diff);

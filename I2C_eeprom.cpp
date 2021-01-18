@@ -158,11 +158,11 @@ int I2C_eeprom::updateByte(const uint16_t memoryAddress, const uint8_t data)
 }
 
 
-// returns 64, 32, 16, 8, 4, 2, 1, 0
+// returns 64, 32, 16, 8, 4, 2, 1
 // 0 is smaller than 1K
 int I2C_eeprom::determineSize(const bool debug)
 {
-  const int TESTSIZE = 8;  // 2^8 = 64 KB == Max recognizable
+  const int TESTSIZE = 16;
 
   uint8_t  orginalValues[TESTSIZE];
   uint32_t address;
@@ -176,22 +176,22 @@ int I2C_eeprom::determineSize(const bool debug)
   // remember old values, non destructive
   for (uint8_t i = 0; i < TESTSIZE; i++)
   {
-    address = (512 << i) - 1;
+    address = (1 << i) - 1;
     orginalValues[i] = readByte(address);
   }
 
   // scan page folding
   int size = 0;
-  for (uint8_t i = 1; i < TESTSIZE; i++)
+  for (uint8_t i = 7; i < TESTSIZE; i++)  // smallest are 128 bit 
   {
-    size = (1 << (i-1));
+    size = i;
     if (debug)
     {
-      Serial.print("TEST KB: ");
+      Serial.print("TEST : ");
       Serial.println(size);
     }
-    uint16_t addr1 = (512 << i) - 1;
-    uint16_t addr2 = (512 << (i+1)) - 1;
+    uint16_t addr1 = (1 << i) - 1;
+    uint16_t addr2 = (1 << (i+1)) - 1;
     writeByte(addr1, 0xAA);
     writeByte(addr2, 0x55);
     if (readByte(addr1) == 0x55) // folded!
@@ -206,7 +206,8 @@ int I2C_eeprom::determineSize(const bool debug)
     uint32_t address = (512 << i) - 1;
     writeByte(address, orginalValues[i]);
   }
-  return size;
+  if (size >= 10) return 1 << (size - 10);
+  return 1 << size;
 }
 
 
