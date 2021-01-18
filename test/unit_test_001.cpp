@@ -51,10 +51,12 @@ unittest(test_new_operator)
 
 unittest(test_constructor)
 {
-  I2C_eeprom EE(0x50);
-  EE.begin();
-  
-  
+  Wire.resetMocks();
+
+  I2C_eeprom EE(0x50, 0x8000);
+
+  assertTrue(EE.begin());
+
   assertEqual(1, 1);
 }
 
