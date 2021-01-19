@@ -2,7 +2,7 @@
 //
 //    FILE: I2C_eeprom.h
 //  AUTHOR: Rob Tillaart
-// VERSION: 1.3.1
+// VERSION: 1.3.2
 // PURPOSE: Arduino Library for external I2C EEPROM 24LC256 et al.
 //     URL: https://github.com/RobTillaart/I2C_EEPROM.git
 //
@@ -12,20 +12,25 @@
 #include "Arduino.h"
 #include "Wire.h"
 
-#define I2C_EEPROM_VERSION "1.3.1"
+
+#define I2C_EEPROM_VERSION          (F("1.3.2"))
+
 
 // The DEFAULT page size. This is overriden if you use the second constructor.
 // I2C_EEPROM_PAGESIZE must be multiple of 2 e.g. 16, 32 or 64
 // 24LC256 -> 64 bytes
-#define I2C_EEPROM_PAGESIZE 64
+#define I2C_EEPROM_PAGESIZE         64
+
 
 // TWI buffer needs max 2 bytes for eeprom address
 // 1 byte for eeprom register address is available in txbuffer
-#define I2C_TWIBUFFERSIZE  30
+#define I2C_TWIBUFFERSIZE           30
+
 
 #ifndef UNIT_TEST_FRIEND
 #define UNIT_TEST_FRIEND
 #endif
+
 
 class I2C_eeprom
 {
@@ -46,9 +51,11 @@ public:
   I2C_eeprom(const uint8_t deviceAddress, const unsigned int deviceSize);
 
 #if defined (ESP8266) || defined(ESP32)
-  void begin(uint8_t sda, uint8_t scl);
+  bool begin(uint8_t sda, uint8_t scl);
 #endif
-  void begin();
+  bool begin();
+
+  bool isConnected();
 
   // writes a byte to memaddr
   int      writeByte(const uint16_t memoryAddress, const uint8_t value);
@@ -57,16 +64,19 @@ public:
   // set length bytes in the EEPROM to the same value.
   int      setBlock(const uint16_t memoryAddress, const uint8_t value, const uint16_t length);
 
+
   // returns the value stored in memaddr
   uint8_t  readByte(const uint16_t memoryAddress);
   // reads length bytes into buffer
   uint16_t readBlock(const uint16_t memoryAddress, uint8_t* buffer, const uint16_t length);
 
+
   // updates a byte at memory address, writes only if there is a new value.
   // return 0 if data is same or written OK, error code otherwise.
   int      updateByte(const uint16_t memoryAddress, const uint8_t value);
 
-  int      determineSize();
+  int      determineSize(const bool debug = false);
+
 
 private:
   uint8_t  _deviceAddress;
@@ -76,6 +86,7 @@ private:
   // for some smaller chips that use one-word addresses
   bool     _isAddressSizeTwoWords;
 
+
   /**
     * Begins wire transmission and selects the given address to write/read.
     *
@@ -83,11 +94,14 @@ private:
     */
   void     _beginTransmission(const uint16_t memoryAddress);
 
+
   int      _pageBlock(const uint16_t memoryAddress, const uint8_t* buffer, const uint16_t length, const bool incrBuffer);
   int      _WriteBlock(const uint16_t memoryAddress, const uint8_t* buffer, const uint8_t length);
   uint8_t  _ReadBlock(const uint16_t memoryAddress, uint8_t* buffer, const uint8_t length);
 
+
   void     _waitEEReady();
+
 
   UNIT_TEST_FRIEND;
 };

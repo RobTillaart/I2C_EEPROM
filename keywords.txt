@@ -7,6 +7,8 @@ I2C_eeprom_cyclic_store	KEYWORD1
 # Methods and Functions (KEYWORD2)
 # Common
 begin	KEYWORD2
+isConnected	KEYWORD2
+
 # I2C_eeprom
 readByte	KEYWORD2
 writeByte	KEYWORD2

@@ -1,36 +1,37 @@
 //
 //    FILE: I2C_eeprom.cpp
 //  AUTHOR: Rob Tillaart
-// VERSION: 1.3.1
+// VERSION: 1.3.2
 // PURPOSE: Arduino Library for external I2C EEPROM 24LC256 et al.
 //     URL: https://github.com/RobTillaart/I2C_EEPROM.git
 //
-// HISTORY:
-// 0.1.00 - 2011-01-21  initial version
-// 0.1.01 - 2011-02-07  added setBlock function
-// 0.2.00 - 2011-02-11  fixed 64 bit boundary bug
-// 0.2.01 - 2011-08-13  _readBlock made more robust + return value
-// 1.0.00 - 2013-06-09  support for Arduino 1.0.x
-// 1.0.01 - 2013-11-01  fixed writeBlock bug, refactor
-// 1.0.02 - 2013-11-03  optimize internal buffers, refactor
-// 1.0.03 - 2013-11-03  refactor 5 millis() write-latency
-// 1.0.04 - 2013-11-03  fix bug in readBlock, moved waitEEReady()
+//  HISTORY:
+//  0.1.00  2011-01-21  initial version
+//  0.1.01  2011-02-07  added setBlock function
+//  0.2.00  2011-02-11  fixed 64 bit boundary bug
+//  0.2.01  2011-08-13  _readBlock made more robust + return value
+//  1.0.00  2013-06-09  support for Arduino 1.0.x
+//  1.0.01  2013-11-01  fixed writeBlock bug, refactor
+//  1.0.02  2013-11-03  optimize internal buffers, refactor
+//  1.0.03  2013-11-03  refactor 5 millis() write-latency
+//  1.0.04  2013-11-03  fix bug in readBlock, moved waitEEReady()
 //                      -> more efficient.
-// 1.0.05 - 2013-11-06  improved waitEEReady(),
+//  1.0.05  2013-11-06  improved waitEEReady(),
 //                      added determineSize()
-// 1.1.00 - 2013-11-13  added begin() function (Note breaking interface)
+//  1.1.00  2013-11-13  added begin() function (Note breaking interface)
 //                      use faster block Wire.write()
 //                      int casting removed
-// 1.2.00 - 2014-05-21  Added support for Arduino DUE ( thanks to Tyler F.)
-// 1.2.01 - 2014-05-21  Refactoring
-// 1.2.02 - 2015-03-06  stricter interface
-// 1.2.03 - 2015-05-15  bugfix in _pageBlock & example (thanks ifreislich )
-// 1.2.4    2017-04-19  remove timeout - issue #63
-// 1.2.5    2017-04-20  refactor the removed timeout (Thanks to Koepel)
-// 1.2.6    2019-02-01  fix issue #121
-// 1.2.7    2019-09-03  fix issue #113 and #128
-// 1.3.0    2020-06-19  refactor; removed pre 1.0 support; added ESP32 support.
-// 1.3.1    2020-12-22  arduino-ci + unit tests + updateByte()
+//  1.2.00  2014-05-21  Added support for Arduino DUE ( thanks to Tyler F.)
+//  1.2.01  2014-05-21  Refactoring
+//  1.2.02  2015-03-06  stricter interface
+//  1.2.03  2015-05-15  bugfix in _pageBlock & example (thanks ifreislich )
+//  1.2.4   2017-04-19  remove timeout - issue #63
+//  1.2.5   2017-04-20  refactor the removed timeout (Thanks to Koepel)
+//  1.2.6   2019-02-01  fix issue #121
+//  1.2.7   2019-09-03  fix issue #113 and #128
+//  1.3.0   2020-06-19  refactor; removed pre 1.0 support; added ESP32 support.
+//  1.3.1   2020-12-22  arduino-ci + unit tests + updateByte()
+//  1.3.2   2021-01-18  cyclic store functionality (Thanks to Tomas Hübner)
 
 
 #include <I2C_eeprom.h>
@@ -40,6 +41,7 @@ I2C_eeprom::I2C_eeprom(const uint8_t deviceAddress)
 {
     I2C_eeprom(deviceAddress, I2C_EEPROM_PAGESIZE);
 }
+
 
 I2C_eeprom::I2C_eeprom(const uint8_t deviceAddress, const unsigned int deviceSize)
 {
@@ -71,25 +73,38 @@ I2C_eeprom::I2C_eeprom(const uint8_t deviceAddress, const unsigned int deviceSiz
     }
 }
 
+
 #if defined (ESP8266) || defined(ESP32)
-void I2C_eeprom::begin(uint8_t sda, uint8_t scl)
+bool I2C_eeprom::begin(uint8_t sda, uint8_t scl)
 {
   Wire.begin(sda, scl);
   _lastWrite = 0;
+  return isConnected();
 }
 #endif
 
-void I2C_eeprom::begin()
+
+bool I2C_eeprom::begin()
 {
   Wire.begin();
   _lastWrite = 0;
+  return isConnected();
 }
+
+
+bool I2C_eeprom::isConnected()
+{
+  Wire.beginTransmission(_deviceAddress);
+  return (Wire.endTransmission() == 0);
+}
+
 
 int I2C_eeprom::writeByte(const uint16_t memoryAddress, const uint8_t data)
 {
   int rv = _WriteBlock(memoryAddress, &data, 1);
   return rv;
 }
+
 
 int I2C_eeprom::setBlock(const uint16_t memoryAddress, const uint8_t data, const uint16_t length)
 {
@@ -102,11 +117,13 @@ int I2C_eeprom::setBlock(const uint16_t memoryAddress, const uint8_t data, const
   return rv;
 }
 
+
 int I2C_eeprom::writeBlock(const uint16_t memoryAddress, const uint8_t* buffer, const uint16_t length)
 {
   int rv = _pageBlock(memoryAddress, buffer, length, true);
   return rv;
 }
+
 
 uint8_t I2C_eeprom::readByte(const uint16_t memoryAddress)
 {
@@ -114,6 +131,7 @@ uint8_t I2C_eeprom::readByte(const uint16_t memoryAddress)
   _ReadBlock(memoryAddress, &rdata, 1);
   return rdata;
 }
+
 
 uint16_t I2C_eeprom::readBlock(const uint16_t memoryAddress, uint8_t* buffer, const uint16_t length)
 {
@@ -138,33 +156,42 @@ int I2C_eeprom::updateByte(const uint16_t memoryAddress, const uint8_t data)
   if (data == readByte(memoryAddress)) return 0;
   return writeByte(memoryAddress, data);
 }
-  
-  
-// returns 64, 32, 16, 8, 4, 2, 1, 0
+
+
+// returns 64, 32, 16, 8, 4, 2, 1
 // 0 is smaller than 1K
-int I2C_eeprom::determineSize()
+int I2C_eeprom::determineSize(const bool debug)
 {
-  int rv = 0;  // unknown
-  uint8_t orgValues[8];
-  uint16_t addr;
+  const int TESTSIZE = 16;
+
+  uint8_t  orginalValues[TESTSIZE];
+  uint32_t address;
 
   // try to read a byte to see if connected
-  rv += _ReadBlock(0x00, orgValues, 1);
-  if (rv == 0) return -1;
+  if (_ReadBlock(0x00, orginalValues, 1) == 0) 
+  {
+    return -1;
+  }
 
   // remember old values, non destructive
-  for (uint8_t i = 0; i < 8; i++)
+  for (uint8_t i = 0; i < TESTSIZE; i++)
   {
-    addr = (512 << i) + 1;
-    orgValues[i] = readByte(addr);
+    address = (1 << i) - 1;
+    orginalValues[i] = readByte(address);
   }
 
   // scan page folding
-  for (uint8_t i = 0; i < 8; i++)
+  int size = 0;
+  for (uint8_t i = 7; i < TESTSIZE; i++)  // smallest are 128 bit 
   {
-    rv = i;
-    uint16_t addr1 = (512 << i) + 1;
-    uint16_t addr2 = (512 << (i+1)) + 1;
+    size = i;
+    if (debug)
+    {
+      Serial.print("TEST : ");
+      Serial.println(size);
+    }
+    uint16_t addr1 = (1 << i) - 1;
+    uint16_t addr2 = (1 << (i+1)) - 1;
     writeByte(addr1, 0xAA);
     writeByte(addr2, 0x55);
     if (readByte(addr1) == 0x55) // folded!
@@ -174,13 +201,15 @@ int I2C_eeprom::determineSize()
   }
 
   // restore original values
-  for (uint8_t i = 0; i < 8; i++)
+  for (uint8_t i = 0; i < TESTSIZE; i++)
   {
-    uint16_t addr = (512 << i) + 1;
-    writeByte(addr, orgValues[i]);
+    uint32_t address = (512 << i) - 1;
+    writeByte(address, orginalValues[i]);
   }
-  return 0x01 << (rv - 1);
+  if (size >= 10) return 1 << (size - 10);
+  return 1 << size;
 }
+
 
 ////////////////////////////////////////////////////////////////////
 //
@@ -212,6 +241,7 @@ int I2C_eeprom::_pageBlock(const uint16_t memoryAddress, const uint8_t* buffer, 
   return 0;
 }
 
+
 // supports one and 2 bytes addresses
 void I2C_eeprom::_beginTransmission(const uint16_t memoryAddress)
 {
@@ -227,6 +257,7 @@ void I2C_eeprom::_beginTransmission(const uint16_t memoryAddress)
   Wire.write((memoryAddress & 0xFF));
 }
 
+
 // pre: length <= this->_pageSize  && length <= I2C_TWIBUFFERSIZE;
 // returns 0 = OK otherwise error
 int I2C_eeprom::_WriteBlock(const uint16_t memoryAddress, const uint8_t* buffer, const uint8_t length)
@@ -240,6 +271,7 @@ int I2C_eeprom::_WriteBlock(const uint16_t memoryAddress, const uint8_t* buffer,
   _lastWrite = micros();
   return rv;
 }
+
 
 // pre: buffer is large enough to hold length bytes
 // returns bytes read
@@ -260,6 +292,7 @@ uint8_t I2C_eeprom::_ReadBlock(const uint16_t memoryAddress, uint8_t* buffer, co
   }
   return readBytes;
 }
+
 
 void I2C_eeprom::_waitEEReady()
 {
