@@ -5,8 +5,10 @@
 // PURPOSE: show/test I2C_EEPROM library
 //
 
+
 #include "Wire.h"
 #include "I2C_eeprom.h"
+
 
 //for decimal display uncomment below two lines
 #define DISPLAY_DECIMAL
@@ -17,7 +19,7 @@
 //#define BLOCK_TO_LENGTH 16
 
 
-#define MEMORY_SIZE 0x2000 //total bytes can be accessed 24LC64 = 0x2000 (maximum address = 0x1FFF)
+#define MEMORY_SIZE 0x2000 // total bytes can be accessed 24LC64 = 0x2000 (maximum address = 0x1FFF)
 
 
 I2C_eeprom ee(0x50, MEMORY_SIZE);

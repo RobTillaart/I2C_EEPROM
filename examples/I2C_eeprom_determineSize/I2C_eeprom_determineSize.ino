@@ -1,18 +1,21 @@
 //
-//    FILE: I2C_eeprom_test.ino
+//    FILE: I2C_eeprom_determineSize.ino
 //  AUTHOR: Rob Tillaart
 // VERSION: 0.1.0
 // PURPOSE: test determinsize function
 //
 
+
 #include "Wire.h"
 #include "I2C_eeprom.h"
+
 
 #define MEMORY_SIZE 0x2000 //total bytes can be accessed 24LC64 = 0x2000 (maximum address = 0x1FFF)
 
 I2C_eeprom ee(0x50, MEMORY_SIZE);
 
 uint32_t start, diff;
+
 
 void setup()
 {
@@ -33,7 +36,7 @@ void setup()
   delay(10);
 
   start = micros();
-  int size = ee.determineSize(true);  // optional true as param
+  int size = ee.determineSize(true);  // debug param
   diff = micros() - start;
   Serial.print("TIME: ");
   Serial.print(diff);
@@ -50,6 +53,7 @@ void setup()
   }
   Serial.println("Done...");
 }
+
 
 void loop()
 {
