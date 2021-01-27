@@ -1,22 +1,22 @@
 //
 //    FILE: I2C_eeprom_update.ino
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.1.0
 // PURPOSE: demo I2C_EEPROM library - updateByte
 //
 
-#include <Wire.h>
-#include <I2C_eeprom.h>
+// uses a 24LC256 (32KB) EEPROM
 
-#define MEMORY_SIZE 0x2000 // total bytes can be accessed 24LC64 = 0x2000 (maximum address = 0x1FFF)
+#include "Wire.h"
+#include "I2C_eeprom.h"
 
-I2C_eeprom ee(0x50, MEMORY_SIZE);
+
+I2C_eeprom ee(0x50, I2C_DEVICESIZE_24LC256);
 
 uint32_t start, dur1, dur2;
 
+
 void setup() 
 {
-  ee.begin();
   Serial.begin(115200); 
   while (!Serial); // wait for SERIAL_OUT port to connect. Needed for Leonardo only
 
@@ -24,8 +24,15 @@ void setup()
   Serial.print("VERSION: ");
   Serial.println(I2C_EEPROM_VERSION);
 
+  ee.begin();
+  if (! ee.isConnected())
+  {
+    Serial.println("ERROR: Can't find eeprom\nstopped...");
+    while (1);
+  }
+
   Serial.println("\nTEST: determine size");
-  int size = ee.determineSize();
+  uint32_t size = ee.determineSize();
   if (size > 0)
   {
     Serial.print("SIZE: ");

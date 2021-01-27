@@ -1,8 +1,7 @@
 //
 //    FILE: I2C_eeprom_test_performance.ino
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.1.0
-// PURPOSE: show/test I2C_EEPROM library
+// PURPOSE: test I2C_EEPROM library
 //
 
 
@@ -10,30 +9,28 @@
 #include "I2C_eeprom.h"
 
 
-//for decimal display uncomment below two lines
-#define DISPLAY_DECIMAL
-#define BLOCK_TO_LENGTH 10
-
-//for hex display uncomment below two lines
-//#define DISPLAY_HEX
-//#define BLOCK_TO_LENGTH 16
-
-
-#define MEMORY_SIZE 0x2000 // total bytes can be accessed 24LC64 = 0x2000 (maximum address = 0x1FFF)
-
-
-I2C_eeprom ee(0x50, MEMORY_SIZE);
+I2C_eeprom ee(0x50, I2C_DEVICESIZE_24LC256);
 
 uint32_t start, diff, totals = 0;
+
 
 void setup()
 {
   Serial.begin(115200);
-  Serial.println(__FILE__);
-
   while (!Serial); // wait for Serial port to connect. Needed for Leonardo only
+  Serial.println(__FILE__);
+  Serial.print("VERSION: ");
+  Serial.println(I2C_EEPROM_VERSION);
 
   ee.begin();
+  if (! ee.isConnected())
+  {
+    Serial.println("ERROR: Can't find eeprom\nstopped...");
+    while (1);
+  }
+
+  Serial.print("I2C_EEPROM_VERSION: ");
+  Serial.println(I2C_EEPROM_VERSION);
 
   for (uint32_t speed = 100000; speed <= 1000000; speed += 100000)
   {
@@ -43,13 +40,14 @@ void setup()
     delay(10);
     test();
   }
-
   Serial.println("\ndone...");
 }
+
 
 void loop()
 {
 }
+
 
 ////////////////////////////////////////////////////////////////////
 
@@ -146,27 +144,13 @@ void test()
 
 void dumpEEPROM(uint16_t memoryAddress, uint16_t length)
 {
-#ifdef DISPLAY_DECIMAL
+  const int BLOCK_TO_LENGTH = 10;
+  
   Serial.print("\t  ");
-#endif
-#ifdef DISPLAY_HEX
-  Serial.print("\t ");
-#endif
-  for (int x = 0; x < BLOCK_TO_LENGTH; x++) {
-    if (x != 0) {
-#ifdef DISPLAY_DECIMAL
-      Serial.print("    ");
-#endif
-#ifdef DISPLAY_HEX
-      Serial.print("   ");
-#endif
-    }
-#ifdef DISPLAY_DECIMAL
+  for (int x = 0; x < 10; x++)
+  {
+    if (x != 0) Serial.print("    ");
     Serial.print(x);
-#endif
-#ifdef DISPLAY_HEX
-    Serial.print(x, HEX);
-#endif
   }
   Serial.println();
 
@@ -180,28 +164,17 @@ void dumpEEPROM(uint16_t memoryAddress, uint16_t length)
     char buf[6];
     if (memoryAddress % BLOCK_TO_LENGTH == 0)
     {
-      if (i != 0) {
-        Serial.println();
-      }
-#ifdef DISPLAY_DECIMAL
+      if (i != 0) Serial.println();
       sprintf(buf, "%05d", memoryAddress);
-#endif
-#ifdef DISPLAY_HEX
-      sprintf(buf, "%04X", memoryAddress);
-#endif
       Serial.print(buf);
       Serial.print(":\t");
     }
-#ifdef DISPLAY_DECIMAL
     sprintf(buf, "%03d", b);
-#endif
-#ifdef DISPLAY_HEX
-    sprintf(buf, "%02X", b);
-#endif
     Serial.print(buf);
     b = ee.readByte(++memoryAddress);
     Serial.print("  ");
   }
   Serial.println();
 }
+
 // END OF FILE

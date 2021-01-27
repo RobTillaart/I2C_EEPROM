@@ -1,7 +1,7 @@
 //
 //    FILE: I2C_eeprom.cpp
 //  AUTHOR: Rob Tillaart
-// VERSION: 1.3.2
+// VERSION: 1.4.0
 // PURPOSE: Arduino Library for external I2C EEPROM 24LC256 et al.
 //     URL: https://github.com/RobTillaart/I2C_EEPROM.git
 //
@@ -32,42 +32,64 @@
 //  1.3.0   2020-06-19  refactor; removed pre 1.0 support; added ESP32 support.
 //  1.3.1   2020-12-22  arduino-ci + unit tests + updateByte()
 //  1.3.2   2021-01-18  cyclic store functionality (Thanks to Tomas Hübner)
+//  1.4.0   2021-01-27  rewritten addressing scheme + determineSize
+//                      See determineSize for all tested.
 
 
 #include <I2C_eeprom.h>
 
+// Not used directly
+#define I2C_PAGESIZE_24LC512          128
+#define I2C_PAGESIZE_24LC256           64
+#define I2C_PAGESIZE_24LC128           64
+#define I2C_PAGESIZE_24LC64            32
+#define I2C_PAGESIZE_24LC32            32
+#define I2C_PAGESIZE_24LC16            16
+#define I2C_PAGESIZE_24LC08            16
+#define I2C_PAGESIZE_24LC04            16
+#define I2C_PAGESIZE_24LC02             8
+#define I2C_PAGESIZE_24LC01             8
+
+
+//  TWI buffer needs max 2 bytes for eeprom address
+//  1 byte for eeprom register address is available in txbuffer
+//  NOTE this is typical on an UNO.   
+//  TODO investigate
+#define I2C_TWIBUFFERSIZE           30
+
 
 I2C_eeprom::I2C_eeprom(const uint8_t deviceAddress)
 {
-    I2C_eeprom(deviceAddress, I2C_EEPROM_PAGESIZE);
+    I2C_eeprom(deviceAddress, I2C_PAGESIZE_24LC256);
 }
 
 
-I2C_eeprom::I2C_eeprom(const uint8_t deviceAddress, const unsigned int deviceSize)
+I2C_eeprom::I2C_eeprom(const uint8_t deviceAddress, const uint32_t deviceSize)
 {
     _deviceAddress = deviceAddress;
+    _deviceSize = deviceSize;
 
     // Chips 16Kbit (2048 Bytes) or smaller only have one-word addresses.
-    this->_isAddressSizeTwoWords = deviceSize <= 2048 ? false : true;
+    this->_isAddressSizeTwoWords = (deviceSize <= I2C_DEVICESIZE_24LC16) ? false : true;
 
     // Try to guess page size from device size (going by Microchip 24LCXX datasheets here).
-    if (deviceSize <= 256) // 2Kbit
+    if (deviceSize <= I2C_DEVICESIZE_24LC02)      // 2Kbit
     {
         this->_pageSize = 8;
     }
-    else if (deviceSize <= 2048) // 16Kbit
+    else if (deviceSize <= I2C_DEVICESIZE_24LC16) // 16Kbit
     {
         this->_pageSize = 16;
     }
-    else if(deviceSize <= 8192) // 64Kbit
+    else if(deviceSize <= I2C_DEVICESIZE_24LC64)  // 64Kbit
     {
         this->_pageSize = 32;
     }
-    else if(deviceSize <= 32768) // 256Kbit
+    else if(deviceSize <= I2C_DEVICESIZE_24LC256) // 256Kbit
     {
         this->_pageSize = 64;
     }
-    else
+    else  // I2C_DEVICESIZE_24LC512
     {
         this->_pageSize = 128;
     }
@@ -77,7 +99,15 @@ I2C_eeprom::I2C_eeprom(const uint8_t deviceAddress, const unsigned int deviceSiz
 #if defined (ESP8266) || defined(ESP32)
 bool I2C_eeprom::begin(uint8_t sda, uint8_t scl)
 {
-  Wire.begin(sda, scl);
+  _wire = &Wire;
+  if ((sda < 255) && (scl < 255))
+  {
+    _wire->begin(sda, scl);
+  }
+  else
+  {
+    _wire->begin();
+  }
   _lastWrite = 0;
   return isConnected();
 }
@@ -86,7 +116,8 @@ bool I2C_eeprom::begin(uint8_t sda, uint8_t scl)
 
 bool I2C_eeprom::begin()
 {
-  Wire.begin();
+  _wire = &Wire;
+  _wire->begin();
   _lastWrite = 0;
   return isConnected();
 }
@@ -94,8 +125,8 @@ bool I2C_eeprom::begin()
 
 bool I2C_eeprom::isConnected()
 {
-  Wire.beginTransmission(_deviceAddress);
-  return (Wire.endTransmission() == 0);
+  _wire->beginTransmission(_deviceAddress);
+  return (_wire->endTransmission() == 0);
 }
 
 
@@ -146,6 +177,7 @@ uint16_t I2C_eeprom::readBlock(const uint16_t memoryAddress, uint8_t* buffer, co
     addr   += cnt;
     buffer += cnt;
     len    -= cnt;
+    yield();    // For OS scheduling etc
   }
   return rv;
 }
@@ -158,56 +190,61 @@ int I2C_eeprom::updateByte(const uint16_t memoryAddress, const uint8_t data)
 }
 
 
-// returns 64, 32, 16, 8, 4, 2, 1
-// 0 is smaller than 1K
-int I2C_eeprom::determineSize(const bool debug)
+// returns size in bytes
+// returns 0 if not connected
+// 
+//   tested for 
+//   2 byte address
+//   24LC512     64 KB    YES
+//   24LC256     32 KB    YES
+//   24LC128     16 KB    YES
+//   24LC64       8 KB    YES
+//   24LC32       4 KB    YES* - no hardware test, address scheme identical to 24LC64.
+//
+//   1 byte address (uses part of deviceAddress byte)
+//   24LC16       2 KB    YES
+//   24LC08       1 KB    YES
+//   24LC04      512 B    YES
+//   24LC02      256 B    YES
+//   24LC01      128 B    YES
+uint32_t I2C_eeprom::determineSize(const bool debug)
 {
-  const int TESTSIZE = 16;
-
-  uint8_t  orginalValues[TESTSIZE];
-  uint32_t address;
-
   // try to read a byte to see if connected
-  if (_ReadBlock(0x00, orginalValues, 1) == 0) 
-  {
-    return -1;
-  }
+  if (! isConnected()) return 0;
+  
+  uint8_t patAA = 0xAA;
+  uint8_t pat55 = 0x55;
 
-  // remember old values, non destructive
-  for (uint8_t i = 0; i < TESTSIZE; i++)
+  for (uint32_t size = 128; size <= 65536; size *= 2)
   {
-    address = (1 << i) - 1;
-    orginalValues[i] = readByte(address);
-  }
+    bool folded = false;
 
-  // scan page folding
-  int size = 0;
-  for (uint8_t i = 7; i < TESTSIZE; i++)  // smallest are 128 bit 
-  {
-    size = i;
+    // store old values
+    bool addressSize = _isAddressSizeTwoWords;
+    _isAddressSizeTwoWords = (size <= 2048) ? false : true;
+    uint8_t buf = readByte(size);
+
+    // test folding
+    uint8_t cnt = 0;
+    writeByte(size, pat55);
+    if (readByte(0) == pat55) cnt++;
+    writeByte(size, patAA);
+    if (readByte(0) == patAA) cnt++;
+    folded = (cnt == 2);
     if (debug)
     {
-      Serial.print("TEST : ");
-      Serial.println(size);
+      Serial.print(size, HEX);
+      Serial.print('\t');
+      Serial.println(readByte(size), HEX);
     }
-    uint16_t addr1 = (1 << i) - 1;
-    uint16_t addr2 = (1 << (i+1)) - 1;
-    writeByte(addr1, 0xAA);
-    writeByte(addr2, 0x55);
-    if (readByte(addr1) == 0x55) // folded!
-    {
-      break;
-    }
-  }
 
-  // restore original values
-  for (uint8_t i = 0; i < TESTSIZE; i++)
-  {
-    uint32_t address = (512 << i) - 1;
-    writeByte(address, orginalValues[i]);
+    // restore old values
+    writeByte(size, buf);
+    _isAddressSizeTwoWords = addressSize;
+
+    if (folded) return size;
   }
-  if (size >= 10) return 1 << (size - 10);
-  return 1 << size;
+  return 0;
 }
 
 
@@ -245,16 +282,20 @@ int I2C_eeprom::_pageBlock(const uint16_t memoryAddress, const uint8_t* buffer, 
 // supports one and 2 bytes addresses
 void I2C_eeprom::_beginTransmission(const uint16_t memoryAddress)
 {
-  Wire.beginTransmission(_deviceAddress);
-
   if (this->_isAddressSizeTwoWords)
   {
+  _wire->beginTransmission(_deviceAddress);
     // Address High Byte
-    Wire.write((memoryAddress >> 8));
+    _wire->write((memoryAddress >> 8));
+  }
+  else
+  {
+    uint8_t addr = 0x50 | ((memoryAddress >> 8) & 0x07);
+    _wire->beginTransmission(addr);
   }
 
   // Address Low Byte (or only byte for chips 16K or smaller that only have one-word addresses)
-  Wire.write((memoryAddress & 0xFF));
+  _wire->write((memoryAddress & 0xFF));
 }
 
 
@@ -265,8 +306,9 @@ int I2C_eeprom::_WriteBlock(const uint16_t memoryAddress, const uint8_t* buffer,
   _waitEEReady();
 
   this->_beginTransmission(memoryAddress);
-  Wire.write(buffer, length);
-  int rv = Wire.endTransmission();
+  _wire->write(buffer, length);
+  int rv = _wire->endTransmission();
+  yield();
 
   _lastWrite = micros();
   return rv;
@@ -280,15 +322,16 @@ uint8_t I2C_eeprom::_ReadBlock(const uint16_t memoryAddress, uint8_t* buffer, co
   _waitEEReady();
 
   this->_beginTransmission(memoryAddress);
-  int rv = Wire.endTransmission();
+  int rv = _wire->endTransmission();
   if (rv != 0) return 0;  // error
 
   // readbytes will always be equal or smaller to length
-  uint8_t readBytes = Wire.requestFrom(_deviceAddress, length);
+  uint8_t readBytes = _wire->requestFrom(_deviceAddress, length);
   uint8_t cnt = 0;
   while (cnt < readBytes)
   {
-    buffer[cnt++] = Wire.read();
+    buffer[cnt++] = _wire->read();
+    yield();
   }
   return readBytes;
 }
@@ -302,8 +345,8 @@ void I2C_eeprom::_waitEEReady()
   // this is a bit faster than the hardcoded 5 milliSeconds
   while ((micros() - _lastWrite) <= I2C_WRITEDELAY)
   {
-    Wire.beginTransmission(_deviceAddress);
-    int x = Wire.endTransmission();
+    _wire->beginTransmission(_deviceAddress);
+    int x = _wire->endTransmission();
     if (x == 0) return;
     yield();
   }
