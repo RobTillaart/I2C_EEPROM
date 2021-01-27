@@ -38,6 +38,7 @@ The **I2C_eeprom_cyclic_store** interface is documented [here](README_cyclic_sto
 
 - **uint32_t getDeviceSize()** idem
 - **uint8_t  getPageSize()** idem
+- **uint32_t getLastWrite()** idem
 - **uint32_t determineSize(bool debug = false)**  
 function that determins the size of the EEPROM by detecting when a memory address is folded upon memory address 0. 
 It is based upon the observation that memory wraps around. 

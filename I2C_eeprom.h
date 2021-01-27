@@ -37,7 +37,7 @@ class I2C_eeprom
 {
 public:
   /**
-    * Initializes the EEPROM with a default pagesize of I2C_DEVICESIZE_24LC256  (32K EEPROM)
+    * Initializes the EEPROM with a default deviceSize of I2C_DEVICESIZE_24LC256  (32K EEPROM)
     */
   I2C_eeprom(const uint8_t deviceAddress);
 
@@ -80,7 +80,7 @@ public:
 
   uint32_t getDeviceSize() { return _deviceSize; };
   uint8_t  getPageSize()   { return _pageSize; };
-
+  uint32_t getLastWrite()  { return _lastWrite; };
 
 private:
   uint8_t  _deviceAddress;

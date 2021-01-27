@@ -211,7 +211,7 @@ uint32_t I2C_eeprom::determineSize(const bool debug)
 {
   // try to read a byte to see if connected
   if (! isConnected()) return 0;
-  
+
   uint8_t patAA = 0xAA;
   uint8_t pat55 = 0x55;
 
