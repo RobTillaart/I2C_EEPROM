@@ -107,7 +107,7 @@ private:
   // to optimize the write latency of the EEPROM
   void     _waitEEReady();
 
-  TwoWire * _wire
+  TwoWire * _wire;
 
   UNIT_TEST_FRIEND;
 };
