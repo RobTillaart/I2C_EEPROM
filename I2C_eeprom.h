@@ -89,7 +89,7 @@ private:
   uint8_t  _pageSize;
 
   // 24LC32..24LC512 use two bytes for memory address
-  // 24LC01..24LC16  use one-byte addresses + part of device address 
+  // 24LC01..24LC16  use one-byte addresses + part of device address
   bool     _isAddressSizeTwoWords;
 
 

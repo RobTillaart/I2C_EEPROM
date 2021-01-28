@@ -48,19 +48,19 @@ The debug flag gives some output to Serial.
 
 Testresults 
 
-| returns |  Size        | Type  | Notes |
-|:--------|:-------------|:------|:------|
-|    0    | connect error |  -   | check device address / wiring |
-|  65536  |  64 KB     | 24LC512 |       |
-|  32768  |  32 KB     | 24LC256 |       |
-|  16384  |  16 KB     | 24LC128 |       |
-|   8192  |   8 KB     | 24LC64  |       |
-|   4096  |   4 KB     | 24LC32  | not tested with hardware |
-|   2048  |   2 KB     | 24LC16  |       |
-|   1024  |   1 KB     | 24LC08  |       |
-|    512  |  512 bytes | 24LC04  |       |
-|    256  |  256 bytes | 24LC02  |       |
-|    128  |  128 bytes | 24LC01  |       |
+| returns | Type    |  Memory  | Page Size | Notes |
+|:--------|:--------|:---------|:-----:|:------|
+|    0    |  -      |          |       | connect error, check device address / wiring |
+|  65536  | 24LC512 |  64 KB   |  128  |       |
+|  32768  | 24LC256 |  32 KB   |   64  |       |
+|  16384  | 24LC128 |  16 KB   |   64  |       |
+|   8192  | 24LC64  |   8 KB   |   32  |       |
+|   4096  | 24LC32  |   4 KB   |   32  | not tested with hardware |
+|   2048  | 24LC16  |   2 KB   |   16  |       |
+|   1024  | 24LC08  |   1 KB   |   16  |       |
+|    512  | 24LC04  |  512 b   |   16  |       |
+|    256  | 24LC02  |  256 b   |    8  |       |
+|    128  | 24LC01  |  128 b   |    8  |       |
 
 The function cannot detect smaller than 128 bit EEPROMS (yet).
 

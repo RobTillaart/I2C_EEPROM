@@ -53,7 +53,7 @@
 
 //  TWI buffer needs max 2 bytes for eeprom address
 //  1 byte for eeprom register address is available in txbuffer
-//  NOTE this is typical on an UNO.   
+//  NOTE this is typical on an UNO.
 //  TODO investigate
 #define I2C_TWIBUFFERSIZE           30
 
@@ -192,8 +192,8 @@ int I2C_eeprom::updateByte(const uint16_t memoryAddress, const uint8_t data)
 
 // returns size in bytes
 // returns 0 if not connected
-// 
-//   tested for 
+//
+//   tested for
 //   2 byte address
 //   24LC512     64 KB    YES
 //   24LC256     32 KB    YES
