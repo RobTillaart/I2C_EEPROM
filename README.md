@@ -30,27 +30,39 @@ The **I2C_eeprom_cyclic_store** interface is documented [here](README_cyclic_sto
 - **int writeBlock(memoryAddress, buffer, length)** write a buffer starting at the specified memory address. 
 - **int setBlock(memoryAddress, value, length)** writes the same byte to length places starting at the specified memory address. Returns 0 if OK.
 - **uint8_t readByte(memoryAddress)** read a single byte from a given address
-- **uint16_treadBlock(memoryAddress, buffer, length)** read length bytes into buffer starting at specified memory address. Returns the number of bytes read, which should be length.
+- **uint16_t readBlock(memoryAddress, buffer, length)** read length bytes into buffer starting at specified memory address. Returns the number of bytes read, which should be length.
 - **int updateByte(memoryAddress, value)** write a single byte, but only if changed. Returns 0 if value was same or write succeeded.
 
 
 ### Other
 
-- **int determineSize(bool debug = false)** function that determins the size of the EEPROM by detecting when a memory address is folded upon memory address divided by 2.
-It is based upon the behavior that memory wraps around. 
-The debug flag gives output to Serial. 
+- **uint32_t getDeviceSize()** idem
+- **uint8_t  getPageSize()** idem
+- **uint32_t getLastWrite()** idem
+- **uint32_t determineSize(bool debug = false)**  
+function that determins the size of the EEPROM by detecting when a memory address is folded upon memory address 0. 
+It is based upon the observation that memory wraps around. 
+The debug flag gives some output to Serial.
 
-| return value | Size in KB | Notes |
-|:-------------|:-----------|:------|
-|    -1        | could not connect | check device address / wiring |
-|    1 .. 64   | 1 KB .. 64 KB |
-|    128       | 128 bytes     |
-|    256       | 256 bytes     |
-|    512       | 512 bytes     |
+**Warning**: this function has changed (again) in 1.4.0 
+
+Testresults 
+
+| returns | Type    |  Memory  | Page Size | Notes |
+|:--------|:--------|:---------|:-----:|:------|
+|    0    |  -      |          |       | connect error, check device address / wiring |
+|  65536  | 24LC512 |  64 KB   |  128  |       |
+|  32768  | 24LC256 |  32 KB   |   64  |       |
+|  16384  | 24LC128 |  16 KB   |   64  |       |
+|   8192  | 24LC64  |   8 KB   |   32  |       |
+|   4096  | 24LC32  |   4 KB   |   32  | not tested with hardware |
+|   2048  | 24LC16  |   2 KB   |   16  |       |
+|   1024  | 24LC08  |   1 KB   |   16  |       |
+|    512  | 24LC04  |  512 b   |   16  |       |
+|    256  | 24LC02  |  256 b   |    8  |       |
+|    128  | 24LC01  |  128 b   |    8  |       |
 
 The function cannot detect smaller than 128 bit EEPROMS (yet).
-
-**Warning**: this function has changed in 1.3.2 and is not tested for all sizes.
 
 
 ## Limitation

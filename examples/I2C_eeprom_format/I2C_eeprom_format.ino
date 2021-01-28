@@ -1,7 +1,7 @@
 //
-//    FILE: I2C_eeprom_determineSize.ino
+//    FILE: I2C_eeprom_format.ino
 //  AUTHOR: Rob Tillaart
-// PURPOSE: test determinSize() function
+// PURPOSE: demo format EEPROM
 //
 
 
@@ -28,15 +28,9 @@ void setup()
     while (1);
   }
 
-  Serial.println("\nDetermine size");
-  delay(10);
 
-  start = micros();
+  Serial.println();
   uint32_t size = ee.determineSize(false);  // debug param
-  diff = micros() - start;
-  Serial.print("TIME: ");
-  Serial.print(diff);
-  Serial.println(" us.");
   if (size == 0)
   {
     Serial.println("SIZE: could not determine size");
@@ -52,6 +46,32 @@ void setup()
     Serial.print("SIZE: ");
     Serial.print(size);
     Serial.println(" bytes.");
+  }
+
+
+  // flush input
+  while (Serial.available()) Serial.read();
+
+  Serial.println("Sure to format EEPROM? [Y | N]");
+  while (!Serial.available());
+  int ans =  Serial.read();
+
+  if ( ans == 'Y')
+  {
+    start = millis();
+    for (uint32_t i = 0; i < size; i += 128)
+    {
+      if (i % 1024 == 0) Serial.print('.');
+      ee.setBlock(0, 0xFF, 128);
+    }
+    diff = millis() - start;
+    Serial.print("\nTIME: ");
+    Serial.print(diff);
+    Serial.println(" ms.");
+  }
+  else
+  {
+    Serial.println("not formatted");
   }
 
   Serial.println("Done...");
