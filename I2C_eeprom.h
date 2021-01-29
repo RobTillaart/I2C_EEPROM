@@ -2,7 +2,7 @@
 //
 //    FILE: I2C_eeprom.h
 //  AUTHOR: Rob Tillaart
-// VERSION: 1.4.0
+// VERSION: 1.4.1
 // PURPOSE: Arduino Library for external I2C EEPROM 24LC256 et al.
 //     URL: https://github.com/RobTillaart/I2C_EEPROM.git
 //
@@ -13,7 +13,7 @@
 #include "Wire.h"
 
 
-#define I2C_EEPROM_VERSION          (F("1.4.0"))
+#define I2C_EEPROM_VERSION          (F("1.4.1"))
 
 
 #define I2C_DEVICESIZE_24LC512      65536
@@ -39,7 +39,7 @@ public:
   /**
     * Initializes the EEPROM with a default deviceSize of I2C_DEVICESIZE_24LC256  (32K EEPROM)
     */
-  I2C_eeprom(const uint8_t deviceAddress);
+  I2C_eeprom(const uint8_t deviceAddress, TwoWire *wire = &Wire);
 
   /**
     * Initializes the EEPROM for the given device address.
@@ -48,8 +48,9 @@ public:
     *
     * @param deviceAddress Byte address of the device.
     * @param deviceSize    Max size in bytes of the device (divide your device size in Kbits by 8)
+    * @param wire          Select alternative Wire interface
     */
-  I2C_eeprom(const uint8_t deviceAddress, const uint32_t deviceSize);
+  I2C_eeprom(const uint8_t deviceAddress, const uint32_t deviceSize, TwoWire *wire = &Wire);
 
 #if defined (ESP8266) || defined(ESP32)
   bool     begin(uint8_t sda, uint8_t scl);
@@ -80,6 +81,7 @@ public:
 
   uint32_t getDeviceSize() { return _deviceSize; };
   uint8_t  getPageSize()   { return _pageSize; };
+  uint8_t  getPageSize(uint32_t deviceSize);
   uint32_t getLastWrite()  { return _lastWrite; };
 
 private:

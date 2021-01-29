@@ -5,6 +5,7 @@
 //
 
 // uses a 24LC256 (32KB) EEPROM
+// might need adaptions for other EEPROMS (page size etc)
 
 #include "Wire.h"
 #include "I2C_eeprom.h"
@@ -48,7 +49,7 @@ void setup()
   {
     SERIAL_OUT.print("SIZE: ");
     SERIAL_OUT.print(size);
-    SERIAL_OUT.println(" KB");
+    SERIAL_OUT.println(" Bytes");
   } else if (size == 0)
   {
     SERIAL_OUT.println("WARNING: Can't determine eeprom size");
