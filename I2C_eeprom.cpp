@@ -60,13 +60,13 @@
 #define I2C_TWIBUFFERSIZE           30
 
 
-I2C_eeprom::I2C_eeprom(const uint8_t deviceAddress, TwoWire *wire = &Wire)
+I2C_eeprom::I2C_eeprom(const uint8_t deviceAddress, TwoWire *wire)
 {
     I2C_eeprom(deviceAddress, I2C_PAGESIZE_24LC256, wire);
 }
 
 
-I2C_eeprom::I2C_eeprom(const uint8_t deviceAddress, const uint32_t deviceSize, TwoWire *wire = &Wire)
+I2C_eeprom::I2C_eeprom(const uint8_t deviceAddress, const uint32_t deviceSize, TwoWire *wire)
 {
     _deviceAddress = deviceAddress;
     _deviceSize = deviceSize;
