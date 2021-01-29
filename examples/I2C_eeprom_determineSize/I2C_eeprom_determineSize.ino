@@ -54,6 +54,11 @@ void setup()
     Serial.println(" bytes.");
   }
 
+  Serial.print("PAGE: ");
+  uint8_t pageSize = ee.getPageSize(size);
+  Serial.print(pageSize);
+  Serial.println(" bytes.");
+
   Serial.println("Done...");
 }
 

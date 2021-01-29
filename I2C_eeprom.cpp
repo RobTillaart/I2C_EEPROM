@@ -1,7 +1,7 @@
 //
 //    FILE: I2C_eeprom.cpp
 //  AUTHOR: Rob Tillaart
-// VERSION: 1.4.0
+// VERSION: 1.4.1
 // PURPOSE: Arduino Library for external I2C EEPROM 24LC256 et al.
 //     URL: https://github.com/RobTillaart/I2C_EEPROM.git
 //
@@ -34,6 +34,8 @@
 //  1.3.2   2021-01-18  cyclic store functionality (Thanks to Tomas Hübner)
 //  1.4.0   2021-01-27  rewritten addressing scheme + determineSize
 //                      See determineSize for all tested.
+//  1.4.1   2021-01-28  fixed addressing bug 24LC04/08/16 equivalents from ST e.g. m24c08w
+//                      add Wire1..WireN;
 
 
 #include <I2C_eeprom.h>
@@ -58,48 +60,27 @@
 #define I2C_TWIBUFFERSIZE           30
 
 
-I2C_eeprom::I2C_eeprom(const uint8_t deviceAddress)
+I2C_eeprom::I2C_eeprom(const uint8_t deviceAddress, TwoWire *wire)
 {
-    I2C_eeprom(deviceAddress, I2C_PAGESIZE_24LC256);
+    I2C_eeprom(deviceAddress, I2C_PAGESIZE_24LC256, wire);
 }
 
 
-I2C_eeprom::I2C_eeprom(const uint8_t deviceAddress, const uint32_t deviceSize)
+I2C_eeprom::I2C_eeprom(const uint8_t deviceAddress, const uint32_t deviceSize, TwoWire *wire)
 {
     _deviceAddress = deviceAddress;
     _deviceSize = deviceSize;
+    _pageSize = getPageSize(_deviceSize);
+    _wire = wire;
 
     // Chips 16Kbit (2048 Bytes) or smaller only have one-word addresses.
     this->_isAddressSizeTwoWords = (deviceSize <= I2C_DEVICESIZE_24LC16) ? false : true;
-
-    // Try to guess page size from device size (going by Microchip 24LCXX datasheets here).
-    if (deviceSize <= I2C_DEVICESIZE_24LC02)      // 2Kbit
-    {
-        this->_pageSize = 8;
-    }
-    else if (deviceSize <= I2C_DEVICESIZE_24LC16) // 16Kbit
-    {
-        this->_pageSize = 16;
-    }
-    else if(deviceSize <= I2C_DEVICESIZE_24LC64)  // 64Kbit
-    {
-        this->_pageSize = 32;
-    }
-    else if(deviceSize <= I2C_DEVICESIZE_24LC256) // 256Kbit
-    {
-        this->_pageSize = 64;
-    }
-    else  // I2C_DEVICESIZE_24LC512
-    {
-        this->_pageSize = 128;
-    }
 }
 
 
 #if defined (ESP8266) || defined(ESP32)
 bool I2C_eeprom::begin(uint8_t sda, uint8_t scl)
 {
-  _wire = &Wire;
   if ((sda < 255) && (scl < 255))
   {
     _wire->begin(sda, scl);
@@ -116,7 +97,6 @@ bool I2C_eeprom::begin(uint8_t sda, uint8_t scl)
 
 bool I2C_eeprom::begin()
 {
-  _wire = &Wire;
   _wire->begin();
   _lastWrite = 0;
   return isConnected();
@@ -248,6 +228,18 @@ uint32_t I2C_eeprom::determineSize(const bool debug)
 }
 
 
+uint8_t I2C_eeprom::getPageSize(uint32_t deviceSize)
+{
+    // determine page size from device size - based on Microchip 24LCXX datasheets.
+    if (deviceSize <= I2C_DEVICESIZE_24LC02) return 8;
+    if (deviceSize <= I2C_DEVICESIZE_24LC16) return 16;
+    if (deviceSize <= I2C_DEVICESIZE_24LC64) return 32;
+    if (deviceSize <= I2C_DEVICESIZE_24LC256) return 64;
+    // I2C_DEVICESIZE_24LC512
+    return 128;
+}
+
+
 ////////////////////////////////////////////////////////////////////
 //
 // PRIVATE
@@ -290,7 +282,7 @@ void I2C_eeprom::_beginTransmission(const uint16_t memoryAddress)
   }
   else
   {
-    uint8_t addr = 0x50 | ((memoryAddress >> 8) & 0x07);
+    uint8_t addr = _deviceAddress | ((memoryAddress >> 8) & 0x07);
     _wire->beginTransmission(addr);
   }
 
