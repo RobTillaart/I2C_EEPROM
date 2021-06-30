@@ -1,7 +1,7 @@
 //
 //    FILE: I2C_eeprom.cpp
 //  AUTHOR: Rob Tillaart
-// VERSION: 1.4.3
+// VERSION: 1.4.4
 // PURPOSE: Arduino Library for external I2C EEPROM 24LC256 et al.
 //     URL: https://github.com/RobTillaart/I2C_EEPROM.git
 //
@@ -38,7 +38,8 @@
 //                      add Wire1..WireN;
 //  1.4.2   2021-01-31  add updateBlock()
 //  1.4.3   2021-05-05  adjust buffer size AVR / ESP +rename
-
+//  1.4.4   2021-06-30  fix #28 addressing
+ 
 
 #include <I2C_eeprom.h>
 
@@ -345,8 +346,18 @@ uint8_t I2C_eeprom::_ReadBlock(const uint16_t memoryAddress, uint8_t* buffer, co
   int rv = _wire->endTransmission();
   if (rv != 0) return 0;  // error
 
-  // readbytes will always be equal or smaller to length
-  uint8_t readBytes = _wire->requestFrom(_deviceAddress, length);
+  // readBytes will always be equal or smaller to length
+
+  uint8_t readBytes = 0;
+  if (this->_isAddressSizeTwoWords)
+  {
+    readBytes = _wire->requestFrom(_deviceAddress, length);
+  }
+  else
+  {
+    uint8_t addr = _deviceAddress | ((memoryAddress >> 8) & 0x07);
+    readBytes = _wire->requestFrom(addr, length);
+  }
   uint8_t cnt = 0;
   while (cnt < readBytes)
   {
