@@ -375,7 +375,7 @@ void I2C_eeprom::_waitEEReady()
   //  Wait until EEPROM gives ACK again.
   //  this is a bit faster than the hardcoded 5 milliSeconds
   //  TWR = WriteCycleTime
-  while ((micros() - _lastWrite) <= (I2C_WRITEDELAY + _maxTWR * 1000UL))
+  while ((micros() - _lastWrite) <= (I2C_WRITEDELAY + _extraTWR * 1000UL))
   {
     _wire->beginTransmission(_deviceAddress);
     int x = _wire->endTransmission();
