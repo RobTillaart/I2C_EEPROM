@@ -341,7 +341,7 @@ int I2C_eeprom::_WriteBlock(const uint16_t memoryAddress, const uint8_t* buffer,
 uint8_t I2C_eeprom::_ReadBlock(const uint16_t memoryAddress, uint8_t* buffer, const uint8_t length)
 {
   // _waitEEReady();
-  delay(5000);
+  delayMicroseconds(5000);
 
   this->_beginTransmission(memoryAddress);
   int rv = _wire->endTransmission();
