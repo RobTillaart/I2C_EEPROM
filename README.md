@@ -84,6 +84,18 @@ If data is changed often between writes, **updateBlock()** is slower than **writ
 So you should verify if your sketch can make use of the advantages of **updateBlock()**
 
 
+#### ExtraWriteCycleTime (experimental)
+
+(new since 1.5.1)
+
+To improve support older I2C EEPROMs e.g. IS24C16 two functions were added to increase 
+the waiting time before a read and/or write as some older devices have a larger timeout
+than 5 milliseconds which is the minimum.
+
+- **void     setExtraWriteCycleTime(uint8_t ms)** idem
+- **uint8_t  getExtraWriteCycleTime()** idem
+
+
 ## Limitation
 
 The library does not offer multiple EEPROMS as one continuous storage device.
