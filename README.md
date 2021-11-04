@@ -56,18 +56,18 @@ The debug flag gives some output to Serial.
 Test results 
 
 | Type    | returns |  Memory  | Page Size | Notes |
-|:--------|:--------|:---------|:-----:|:------|
-|  -      |    0    |          |       | connect error, check device address / wiring |
-| 24LC512 |  65536  |  64 KB   |  128  |       |
-| 24LC256 |  32768  |  32 KB   |   64  |       |
-| 24LC128 |  16384  |  16 KB   |   64  |       |
-| 24LC64  |   8192  |   8 KB   |   32  |       |
-| 24LC32  |   4096  |   4 KB   |   32  | not tested with hardware |
-| 24LC16  |   2048  |   2 KB   |   16  |       |
-| 24LC08  |   1024  |   1 KB   |   16  |       |
-| 24LC04  |    512  |  512 b   |   16  |       |
-| 24LC02  |    256  |  256 b   |    8  |       |
-| 24LC01  |    128  |  128 b   |    8  |       |
+|:--------|:--------|:---------|:---------:|:------|
+|  -      |    0    |          |           | connect error, check device address / wiring |
+| 24LC512 |  65536  |  64 KB   |  128      |       |
+| 24LC256 |  32768  |  32 KB   |   64      |       |
+| 24LC128 |  16384  |  16 KB   |   64      |       |
+| 24LC64  |   8192  |   8 KB   |   32      |       |
+| 24LC32  |   4096  |   4 KB   |   32      | not tested with hardware |
+| 24LC16  |   2048  |   2 KB   |   16      |       |
+| 24LC08  |   1024  |   1 KB   |   16      |       |
+| 24LC04  |    512  |  512 b   |   16      |       |
+| 24LC02  |    256  |  256 b   |    8      |       |
+| 24LC01  |    128  |  128 b   |    8      |       |
 
 The function cannot detect smaller than 128 bit EEPROMS.
 
