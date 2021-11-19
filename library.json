@@ -18,5 +18,6 @@
   "version": "1.5.1",
   "license": "MIT",
   "frameworks": "arduino",
-  "platforms": "*"
+  "platforms": "*",
+  "headers": "I2C_eeprom.h"
 }
