@@ -259,7 +259,7 @@ bool I2C_eeprom::updateBlockVerify(const uint16_t memoryAddress, const uint8_t* 
 {
   updateBlock(memoryAddress, buffer, length);
   uint8_t data[length];
-  if (readBlock(memoryAddress, buffer, length) != length) return false;
+  if (readBlock(memoryAddress, data, length) != length) return false;
   return memcmp(data, buffer, length) == 0;
 }
 
