@@ -182,12 +182,15 @@ uint16_t I2C_eeprom::readBlock(const uint16_t memoryAddress, uint8_t* buffer, co
 //
 //  UPDATE SECTION
 //
+//  returns 0 == OK
 int I2C_eeprom::updateByte(const uint16_t memoryAddress, const uint8_t data)
 {
   if (data == readByte(memoryAddress)) return 0;
   return writeByte(memoryAddress, data);
 }
 
+
+//  returns bytes updated
 int I2C_eeprom::updateBlock(const uint16_t memoryAddress, const uint8_t* buffer, const uint16_t length)
 {
   uint16_t addr = memoryAddress;
@@ -219,7 +222,7 @@ int I2C_eeprom::updateBlock(const uint16_t memoryAddress, const uint8_t* buffer,
 //
 bool I2C_eeprom::writeByteVerify(const uint16_t memoryAddress, const uint8_t value)
 {
-  writeByte(memoryAddress, value);
+  if (writeByte(memoryAddress, value) != 0 ) return false;
   uint8_t data = readByte(memoryAddress);
   return (data == value);
 }
@@ -227,7 +230,7 @@ bool I2C_eeprom::writeByteVerify(const uint16_t memoryAddress, const uint8_t val
 
 bool I2C_eeprom::writeBlockVerify(const uint16_t memoryAddress, const uint8_t* buffer, const uint16_t length)
 {
-  writeBlock(memoryAddress, buffer, length);
+  if (writeBlock(memoryAddress, buffer, length) != 0) return false;
   uint8_t data[length];
   if (readBlock(memoryAddress, data, length) != length) return false;
   return memcmp(data, buffer, length) == 0;
@@ -236,7 +239,7 @@ bool I2C_eeprom::writeBlockVerify(const uint16_t memoryAddress, const uint8_t* b
 
 bool I2C_eeprom::setBlockVerify(const uint16_t memoryAddress, const uint8_t value, const uint16_t length)
 {
-  setBlock(memoryAddress, value, length);
+  if (setBlock(memoryAddress, value, length) != 0) return false;
   uint8_t data[length];
   if (readBlock(memoryAddress, data, length) != length) return false;
   for (int i = 0; i < length; i++)
@@ -249,7 +252,7 @@ bool I2C_eeprom::setBlockVerify(const uint16_t memoryAddress, const uint8_t valu
 
 bool I2C_eeprom::updateByteVerify(const uint16_t memoryAddress, const uint8_t value)
 {
-  updateByte(memoryAddress, value);
+  if (updateByte(memoryAddress, value) != 0 ) return false;
   uint8_t data = readByte(memoryAddress);
   return (data == value);
 }
@@ -257,7 +260,7 @@ bool I2C_eeprom::updateByteVerify(const uint16_t memoryAddress, const uint8_t va
 
 bool I2C_eeprom::updateBlockVerify(const uint16_t memoryAddress, const uint8_t* buffer, const uint16_t length)
 {
-  updateBlock(memoryAddress, buffer, length);
+  if (updateBlock(memoryAddress, buffer, length) != length) return false;
   uint8_t data[length];
   if (readBlock(memoryAddress, data, length) != length) return false;
   return memcmp(data, buffer, length) == 0;
