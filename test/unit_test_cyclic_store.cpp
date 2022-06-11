@@ -70,13 +70,14 @@ unittest(cyclic_store_empty_begin)
   EE.begin();
   
   auto miso = Wire.getMiso(I2C_EEPROM_ADDR);
+  assertEqual(2, mosi->size());
   miso->push_back(0xff);
   miso->push_back(0xff);
   miso->push_back(0xff);
   miso->push_back(0xff);
 
   I2C_eeprom_cyclic_store<DummyTestData> CS;
-  assertEqual(true, CS.begin(EE, 32, 4));
+  assertTrue(CS.begin(EE, 32, 4));
   assertEqual(2, mosi->size());
 }
 
