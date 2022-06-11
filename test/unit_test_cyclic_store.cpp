@@ -100,13 +100,12 @@ unittest(cyclic_store_double_page_buffer)
   miso->push_back(0xff);
 
   I2C_eeprom_cyclic_store<uint8_t[40]> CS;
-  assertEqual(true, CS.begin(EE, 32, 4));
+  assertTrue(CS.begin(EE, 32, 4));
 
   uint16_t slots;
   uint32_t writes;
 
-  CS.getMetrics(slots, writes);
-
+  assertTrue(CS.getMetrics(slots, writes));
   assertEqual(2, slots);
   assertEqual(0, writes);
 }
