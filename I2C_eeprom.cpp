@@ -435,15 +435,9 @@ uint8_t I2C_eeprom::_ReadBlock(const uint16_t memoryAddress, uint8_t * buffer, c
 {
   _waitEEReady();
 
-  if (isConnected() == false)
-  {
-    if (_debug)
-    {
-      Serial.print("mem addr r: ");
-      Serial.println(memoryAddress, HEX);
-    }
-    return 0;  // error
-  }
+  this->_beginTransmission(memoryAddress);
+  int rv = _wire->endTransmission();
+  if (rv != 0) return 0;  // error
 
   // readBytes will always be equal or smaller to length
   uint8_t readBytes = 0;
@@ -475,7 +469,9 @@ void I2C_eeprom::_waitEEReady()
   uint32_t waitTime = I2C_WRITEDELAY + _extraTWR * 1000UL;  // do the math once.
   while ((micros() - _lastWrite) <= waitTime)
   {
-    if (isConnected()) return;
+    _wire->beginTransmission(_deviceAddress);
+    int x = _wire->endTransmission();
+    if (x == 0) return;
     yield();
   }
   return;

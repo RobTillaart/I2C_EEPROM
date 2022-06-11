@@ -50,7 +50,10 @@ void setup()
   start = micros();
   for (int i = 0; i < 100; i++)
   {
-    ee.writeByteVerify(i, 0);
+    if (ee.writeByteVerify(i, 0) == false)
+    {
+      Serial.print("X");
+    }
   }
   dur1 = micros() - start;
   Serial.print("DUR1: ");
@@ -76,7 +79,10 @@ void setup()
   start = micros();
   for (int i = 0; i < 100; i++)
   {
-    ee.updateByteVerify(i, 0);
+    if (ee.updateByteVerify(i, 0) == false)
+    {
+      Serial.print("X");
+    }
   }
   dur2 = micros() - start;
   Serial.print("DUR2: ");
@@ -89,7 +95,10 @@ void setup()
   start = micros();
   for (int i = 0; i < 100; i++)
   {
-    ee.updateByteVerify(i, i);
+    if (ee.updateByteVerify(i, i) == false)
+    {
+      Serial.print("X");
+    }
   }
   dur2 = micros() - start;
   Serial.print("DUR2: ");
@@ -119,7 +128,10 @@ void setup()
   start = micros();
   for (int i = 0; i < 100; i++)
   {
-    ee.writeBlockVerify(0, (uint8_t *) buffer, 50);
+    if (ee.writeBlockVerify(0, (uint8_t *) buffer, 50) == false)
+    {
+      Serial.print("X");
+    }
   }
   dur1 = micros() - start;
   Serial.print("DUR1: ");
@@ -146,7 +158,10 @@ void setup()
   start = micros();
   for (int i = 0; i < 100; i++)
   {
-    ee.updateBlockVerify(0, (uint8_t *) buffer, 50);
+    if (ee.updateBlockVerify(0, (uint8_t *) buffer, 50) == false)
+    {
+      Serial.print("X");
+    }
   }
   dur2 = micros() - start;
   Serial.print("DUR2: ");
@@ -160,7 +175,10 @@ void setup()
   start = micros();
   for (int i = 0; i < 100; i++)
   {
-    ee.updateBlockVerify(0, (uint8_t *) buffer, 50);
+    if (ee.updateBlockVerify(0, (uint8_t *) buffer, 50) == false)
+    {
+      Serial.print("X");
+    }
   }
   dur2 = micros() - start;
   Serial.print("DUR2: ");
@@ -188,7 +206,10 @@ void setup()
   start = micros();
   for (int i = 0; i < 100; i++)
   {
-    ee.setBlockVerify(0, 0, 50);
+    if (ee.setBlockVerify(0, 0, 50) == false)
+    {
+      Serial.print("X");
+    }
   }
   dur2 = micros() - start;
   Serial.print("DUR2: ");
@@ -200,7 +221,10 @@ void setup()
   start = micros();
   for (int i = 0; i < 100; i++)
   {
-    ee.setBlockVerify(0, 1, 50);
+    if (ee.setBlockVerify(0, 1, 50) == false)
+    {
+      Serial.print("X");
+    }
   }
   dur2 = micros() - start;
   Serial.print("DUR2: ");
