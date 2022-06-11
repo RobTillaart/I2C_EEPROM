@@ -1,0 +1,42 @@
+I2C_EEPROM\examples\I2C_eeprom_verify\I2C_eeprom_verify.ino
+VERSION: 1.6.1
+
+TEST: 100x writeByte()
+DUR1: 465716
+
+TEST: 100x writeByteVerify()
+DUR1: 521380
+
+TEST: 100x updateByte() same data
+DUR2: 43220
+
+TEST: 100x updateByteVerify() same data
+DUR2: 91120
+
+TEST: 100x updateByteVerify() not same data
+DUR2: 555280
+
+TEST: 100x writeBlock()
+DUR1: 1412456
+
+TEST: 100x writeBlockVerify()
+DUR1: 1968396
+
+TEST: 100x updateBlock() same data
+DUR2: 1309488
+
+TEST: 100x updateBlockVerify() same data
+DUR2: 1861868
+
+TEST: 100x updateBlockVerify() not same data
+DUR2: 1872560
+
+TEST: 100x setBlock() same data
+DUR2: 1413892
+
+TEST: 100x setBlockVerify() same data
+DUR2: 1972524
+
+TEST: 100x setBlockVerify() not same data
+DUR2: 1965956
+done...
