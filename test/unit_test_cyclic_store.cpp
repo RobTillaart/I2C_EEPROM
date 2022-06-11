@@ -70,6 +70,8 @@ unittest(cyclic_store_empty_begin)
   EE.begin();
 
   auto miso = Wire.getMiso(I2C_EEPROM_ADDR);
+  //  size should be zero as no bytes were written
+  assertEqual(0, mosi->size());
   miso->push_back(0xff);
   miso->push_back(0xff);
   miso->push_back(0xff);
@@ -77,7 +79,7 @@ unittest(cyclic_store_empty_begin)
 
   I2C_eeprom_cyclic_store<DummyTestData> CS;
   assertTrue(CS.begin(EE, 32, 4));
-  //  changed to 0 to keep build happy
+  //  size should be zero as no bytes were written
   assertEqual(0, mosi->size());
 }
 
@@ -99,7 +101,6 @@ unittest(cyclic_store_double_page_buffer)
   miso->push_back(0xff);
   miso->push_back(0xff);
   miso->push_back(0xff);
-  fprintf(stderr, "size: %d\n", miso ->size());
 
   I2C_eeprom_cyclic_store<uint8_t[40]> CS;
   assertTrue(CS.begin(EE, 32, 4));
@@ -605,8 +606,9 @@ unittest(cyclic_store_wrapping_single_page)
   miso->push_back(0xff);
 
   I2C_eeprom_cyclic_store<uint8_t[20]> CS;
-  assertEqual(true, CS.begin(EE, 32, 4));
-  assertEqual(2, mosi->size());
+  assertTrue(CS.begin(EE, 32, 4));
+  //  size should be zero as no bytes were written
+  assertEqual(0, mosi->size());
 
   uint8_t dummy[20];
 
