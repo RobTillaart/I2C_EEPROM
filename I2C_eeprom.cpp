@@ -74,13 +74,13 @@
 //
 // PUBLIC FUNCTIONS
 //
-I2C_eeprom::I2C_eeprom(const uint8_t deviceAddress, TwoWire *wire)
+I2C_eeprom::I2C_eeprom(const uint8_t deviceAddress, TwoWire * wire)
 {
     I2C_eeprom(deviceAddress, I2C_PAGESIZE_24LC256, wire);
 }
 
 
-I2C_eeprom::I2C_eeprom(const uint8_t deviceAddress, const uint32_t deviceSize, TwoWire *wire)
+I2C_eeprom::I2C_eeprom(const uint8_t deviceAddress, const uint32_t deviceSize, TwoWire * wire)
 {
     _deviceAddress = deviceAddress;
     _deviceSize = deviceSize;
@@ -422,9 +422,21 @@ int I2C_eeprom::_WriteBlock(const uint16_t memoryAddress, const uint8_t * buffer
   this->_beginTransmission(memoryAddress);
   _wire->write(buffer, length);
   int rv = _wire->endTransmission();
+  _lastWrite = micros();
+
   yield();
 
-  _lastWrite = micros();
+//  if (rv != 0)
+//  {
+//    if (_debug)
+//    {
+//      Serial.print("mem addr w: ");
+//      Serial.print(memoryAddress, HEX);
+//      Serial.print("\t");
+//      Serial.println(rv);
+//    }
+//    return -(abs(rv));  // error
+//  }
   return rv;
 }
 
@@ -437,7 +449,17 @@ uint8_t I2C_eeprom::_ReadBlock(const uint16_t memoryAddress, uint8_t * buffer, c
 
   this->_beginTransmission(memoryAddress);
   int rv = _wire->endTransmission();
-  if (rv != 0) return 0;  // error
+  if (rv != 0)
+  {
+//    if (_debug)
+//    {
+//      Serial.print("mem addr r: ");
+//      Serial.print(memoryAddress, HEX);
+//      Serial.print("\t");
+//      Serial.println(rv);
+//    }
+    return 0;  // error
+  }
 
   // readBytes will always be equal or smaller to length
   uint8_t readBytes = 0;

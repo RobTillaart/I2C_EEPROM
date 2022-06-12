@@ -9,6 +9,7 @@
 #include "Wire.h"
 #include "I2C_eeprom.h"
 
+#define NN   100
 
 I2C_eeprom ee(0x50, I2C_DEVICESIZE_24LC256);
 
@@ -31,11 +32,14 @@ void setup()
     while (1);
   }
 
-  Serial.println("\nTEST: 100x writeByte()");
+  Serial.print("\nTestruns NN: ");
+  Serial.print(NN);
+  Serial.println("\n");
+  Serial.println("\nTEST: NN x writeByte()");
   delay(10);
   ee.setBlock(0, 0, 100);  // clear first 100 bytes
   start = micros();
-  for (int i = 0; i < 100; i++)
+  for (int i = 0; i < NN; i++)
   {
     ee.writeByte(i, 0);
   }
@@ -44,11 +48,11 @@ void setup()
   Serial.println(dur1);
   delay(10);
 
-  Serial.println("\nTEST: 100x writeByteVerify()");
+  Serial.println("\nTEST: NN x writeByteVerify()");
   delay(10);
   ee.setBlock(0, 0, 100);  // clear first 100 bytes
   start = micros();
-  for (int i = 0; i < 100; i++)
+  for (int i = 0; i < NN; i++)
   {
     if (ee.writeByteVerify(i, 0) == false)
     {
@@ -62,10 +66,10 @@ void setup()
 
   //////////////////////////////////////////////////////////////////////
 
-  Serial.println("\nTEST: 100x updateByte() same data");
+  Serial.println("\nTEST: NN x updateByte() same data");
   delay(10);
   start = micros();
-  for (int i = 0; i < 100; i++)
+  for (int i = 0; i < NN; i++)
   {
     ee.updateByte(i, 0);
   }
@@ -74,10 +78,10 @@ void setup()
   Serial.println(dur2);
   delay(10);
 
-  Serial.println("\nTEST: 100x updateByteVerify() same data");
+  Serial.println("\nTEST: NN x updateByteVerify() same data");
   delay(10);
   start = micros();
-  for (int i = 0; i < 100; i++)
+  for (int i = 0; i < NN; i++)
   {
     if (ee.updateByteVerify(i, 0) == false)
     {
@@ -89,11 +93,11 @@ void setup()
   Serial.println(dur2);
   delay(10);
 
-  Serial.println("\nTEST: 100x updateByteVerify() not same data");
+  Serial.println("\nTEST: NN x updateByteVerify() not same data");
   delay(10);
   ee.setBlock(0, 0, 100);  // clear first 100 bytes
   start = micros();
-  for (int i = 0; i < 100; i++)
+  for (int i = 0; i < NN; i++)
   {
     if (ee.updateByteVerify(i, i) == false)
     {
@@ -108,11 +112,11 @@ void setup()
   //////////////////////////////////////////////////////////////////////
 
   char buffer[] = "12345678901234567890123456789012345678901234567890";  //  50 bytes
-  Serial.println("\nTEST: 100x writeBlock()");
+  Serial.println("\nTEST: NN x writeBlock()");
   delay(10);
   ee.setBlock(0, 0, 100);  // clear first 100 bytes
   start = micros();
-  for (int i = 0; i < 100; i++)
+  for (int i = 0; i < NN; i++)
   {
     ee.writeBlock(0, (uint8_t *) buffer, 50);
   }
@@ -122,11 +126,11 @@ void setup()
   delay(10);
 
 
-  Serial.println("\nTEST: 100x writeBlockVerify()");
+  Serial.println("\nTEST: NN x writeBlockVerify()");
   delay(10);
   ee.setBlock(0, 0, 100);  // clear first 100 bytes
   start = micros();
-  for (int i = 0; i < 100; i++)
+  for (int i = 0; i < NN; i++)
   {
     if (ee.writeBlockVerify(0, (uint8_t *) buffer, 50) == false)
     {
@@ -140,10 +144,10 @@ void setup()
 
   //////////////////////////////////////////////////////////////////////
 
-  Serial.println("\nTEST: 100x updateBlock() same data");
+  Serial.println("\nTEST: NN x updateBlock() same data");
   delay(10);
   start = micros();
-  for (int i = 0; i < 100; i++)
+  for (int i = 0; i < NN; i++)
   {
     ee.updateBlock(0, (uint8_t *) buffer, 50);
   }
@@ -153,10 +157,10 @@ void setup()
   delay(10);
 
 
-  Serial.println("\nTEST: 100x updateBlockVerify() same data");
+  Serial.println("\nTEST: NN x updateBlockVerify() same data");
   delay(10);
   start = micros();
-  for (int i = 0; i < 100; i++)
+  for (int i = 0; i < NN; i++)
   {
     if (ee.updateBlockVerify(0, (uint8_t *) buffer, 50) == false)
     {
@@ -169,11 +173,11 @@ void setup()
   delay(10);
 
   strcpy(buffer, "98765432109876543210987654321098765432109876543210");  //  50 bytes
-  Serial.println("\nTEST: 100x updateBlockVerify() not same data");
+  Serial.println("\nTEST: NN x updateBlockVerify() not same data");
   delay(10);
   ee.setBlock(0, 0, 100);  // clear first 100 bytes
   start = micros();
-  for (int i = 0; i < 100; i++)
+  for (int i = 0; i < NN; i++)
   {
     if (ee.updateBlockVerify(0, (uint8_t *) buffer, 50) == false)
     {
@@ -187,11 +191,11 @@ void setup()
 
   //////////////////////////////////////////////////////////////////////
 
-  Serial.println("\nTEST: 100x setBlock() same data");
+  Serial.println("\nTEST: NN x setBlock() same data");
   delay(10);
   ee.setBlock(0, 0, 100);  // clear first 100 bytes
   start = micros();
-  for (int i = 0; i < 100; i++)
+  for (int i = 0; i < NN; i++)
   {
     ee.setBlock(0, 0, 50);
   }
@@ -200,11 +204,11 @@ void setup()
   Serial.println(dur2);
   delay(10);
 
-  Serial.println("\nTEST: 100x setBlockVerify() same data");
+  Serial.println("\nTEST: NN x setBlockVerify() same data");
   delay(10);
   ee.setBlock(0, 0, 100);  // clear first 100 bytes
   start = micros();
-  for (int i = 0; i < 100; i++)
+  for (int i = 0; i < NN; i++)
   {
     if (ee.setBlockVerify(0, 0, 50) == false)
     {
@@ -216,10 +220,10 @@ void setup()
   Serial.println(dur2);
   delay(10);
 
-  Serial.println("\nTEST: 100x setBlockVerify() not same data");
+  Serial.println("\nTEST: NN x setBlockVerify() not same data");
   delay(10);
   start = micros();
-  for (int i = 0; i < 100; i++)
+  for (int i = 0; i < NN; i++)
   {
     if (ee.setBlockVerify(0, 1, 50) == false)
     {

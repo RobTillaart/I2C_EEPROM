@@ -56,8 +56,8 @@ public:
   bool     begin(uint8_t sda, uint8_t scl);
 #endif
   bool     begin();
-
   bool     isConnected();
+
 
   //  writes a byte to memoryAddress
   //  returns I2C status, 0 = OK
@@ -83,7 +83,9 @@ public:
   //  updates a block in memory, writes only if there is a new value.
   //  only to be used when you expect to write same buffer multiple times.
   //  test your performance gains!
+  //  returns bytes written.
   uint16_t updateBlock(const uint16_t memoryAddress, const uint8_t * buffer, const uint16_t length);
+
 
   //  same functions as above but with verify
   //  return false if write or verify failed.
@@ -92,6 +94,7 @@ public:
   bool     setBlockVerify(const uint16_t memoryAddress, const uint8_t value, const uint16_t length);
   bool     updateByteVerify(const uint16_t memoryAddress, const uint8_t value);
   bool     updateBlockVerify(const uint16_t memoryAddress, const uint8_t * buffer, const uint16_t length);
+
 
   //  Meta data functions
   uint32_t determineSize(const bool debug = false);
@@ -105,6 +108,7 @@ public:
   void     setExtraWriteCycleTime(uint8_t ms) { _extraTWR = ms; };
   uint8_t  getExtraWriteCycleTime() { return _extraTWR; };
 
+
 private:
   uint8_t  _deviceAddress;
   uint32_t _lastWrite  = 0;  // for waitEEReady
@@ -115,7 +119,6 @@ private:
   //  24LC32..24LC512 use two bytes for memory address
   //  24LC01..24LC16  use one-byte addresses + part of device address
   bool     _isAddressSizeTwoWords;
-
 
   void     _beginTransmission(const uint16_t memoryAddress);
 
