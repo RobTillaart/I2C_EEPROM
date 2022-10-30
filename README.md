@@ -47,8 +47,13 @@ Most important change is 32 bit memory addresses.
 
 - **I2C_eeprom(uint8_t deviceAddress, TwoWire \*wire = &Wire)** constructor, optional Wire interface.
 - **I2C_eeprom(uint8_t deviceAddress, uint32_t deviceSize, TwoWire \*wire = &Wire)** constructor, with optional Wire interface.
-- **bool begin()** initializes the I2C bus and checks if the device is available on the I2C bus.
-- **bool begin(uint8_t sda, uint8_t scl)** idem for ESP32 / ESP8266 and alike.
+- **bool begin()** initializes the I2C bus with the default pins.
+Furthermore it checks if the deviceAddress is available on the I2C bus.
+Returns true if deviceAddress is found on the bus, false otherwise.
+- **bool begin(uint8_t sda, uint8_t scl)** (ESP32 / ESP8266 only)
+initializes the I2C bus with the specified pins, therby overruling the default pins.
+Furthermore it checks if the deviceAddress is available on the I2C bus.
+Returns true if deviceAddress is found on the bus, false otherwise.
 - **bool isConnected()** test to see if deviceAddress is found on the bus.
 
 
