@@ -8,10 +8,10 @@
 //  HISTORY: see changelog.md
 
 
-
 #include "I2C_eeprom.h"
 
-// Not used directly
+
+//  Not used directly
 #define I2C_PAGESIZE_24LC512          128
 #define I2C_PAGESIZE_24LC256           64
 #define I2C_PAGESIZE_24LC128           64
@@ -35,7 +35,7 @@
 
 ////////////////////////////////////////////////////////////////////
 //
-// PUBLIC FUNCTIONS
+//  PUBLIC FUNCTIONS
 //
 I2C_eeprom::I2C_eeprom(const uint8_t deviceAddress, TwoWire * wire)
 {
@@ -50,7 +50,7 @@ I2C_eeprom::I2C_eeprom(const uint8_t deviceAddress, const uint32_t deviceSize, T
     _pageSize = getPageSize(_deviceSize);
     _wire = wire;
 
-    // Chips 16Kbit (2048 Bytes) or smaller only have one-word addresses.
+    //  Chips 16Kbit (2048 Bytes) or smaller only have one-word addresses.
     this->_isAddressSizeTwoWords = deviceSize > I2C_DEVICESIZE_24LC16;
 }
 
@@ -253,8 +253,8 @@ bool I2C_eeprom::updateBlockVerify(const uint16_t memoryAddress, const uint8_t *
 //  METADATA SECTION
 //
 
-// returns size in bytes
-// returns 0 if not connected
+//  returns size in bytes
+//  returns 0 if not connected
 //
 //   tested for
 //   2 byte address
@@ -282,12 +282,12 @@ uint32_t I2C_eeprom::determineSize(const bool debug)
   {
     bool folded = false;
 
-    // store old values
+    //  store old values
     bool addressSize = _isAddressSizeTwoWords;
     _isAddressSizeTwoWords = size > I2C_DEVICESIZE_24LC16;  // 2048
     uint8_t buf = readByte(size);
 
-    // test folding
+    //  test folding
     uint8_t cnt = 0;
     writeByte(size, pat55);
     if (readByte(0) == pat55) cnt++;
@@ -301,7 +301,7 @@ uint32_t I2C_eeprom::determineSize(const bool debug)
       Serial.println(readByte(size), HEX);
     }
 
-    // restore old values
+    //  restore old values
     writeByte(size, buf);
     _isAddressSizeTwoWords = addressSize;
 
@@ -313,12 +313,13 @@ uint32_t I2C_eeprom::determineSize(const bool debug)
 
 uint8_t I2C_eeprom::getPageSize(uint32_t deviceSize)
 {
-    // determine page size from device size - based on Microchip 24LCXX data sheets.
+    //  determine page size from device size 
+    //  based on Microchip 24LCXX data sheets.
     if (deviceSize <= I2C_DEVICESIZE_24LC02) return 8;
     if (deviceSize <= I2C_DEVICESIZE_24LC16) return 16;
     if (deviceSize <= I2C_DEVICESIZE_24LC64) return 32;
     if (deviceSize <= I2C_DEVICESIZE_24LC256) return 64;
-    // I2C_DEVICESIZE_24LC512
+    //  I2C_DEVICESIZE_24LC512
     return 128;
 }
 

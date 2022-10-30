@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Add CHANGELOG.md
 - remove **yield()** calls in writeBlock(), readBlock() and updateBlock()
   as these are already handled on a lower level. See #46
+- better explain **begin()** in readme.md
 
 
 ## [1.6.1] - 2022-06-11
