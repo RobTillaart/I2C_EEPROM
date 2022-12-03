@@ -58,6 +58,7 @@ I2C_eeprom::I2C_eeprom(const uint8_t deviceAddress, const uint32_t deviceSize, T
 #if defined (ESP8266) || defined(ESP32)
 bool I2C_eeprom::begin(uint8_t sda, uint8_t scl)
 {
+   //  if (_wire == 0) Serial.println("zero");  //  test #48
   if ((sda < 255) && (scl < 255))
   {
     _wire->begin(sda, scl);
@@ -74,6 +75,7 @@ bool I2C_eeprom::begin(uint8_t sda, uint8_t scl)
 
 bool I2C_eeprom::begin()
 {
+  //  if (_wire == 0) Serial.println("zero");  //  test #48
   _wire->begin();
   _lastWrite = 0;
   return isConnected();
