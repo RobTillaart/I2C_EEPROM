@@ -1,7 +1,7 @@
 //
 //    FILE: I2C_eeprom.cpp
 //  AUTHOR: Rob Tillaart
-// VERSION: 1.6.2
+// VERSION: 1.7.0
 // PURPOSE: Arduino Library for external I2C EEPROM 24LC256 et al.
 //     URL: https://github.com/RobTillaart/I2C_EEPROM.git
 //
@@ -37,9 +37,9 @@
 //
 //  PUBLIC FUNCTIONS
 //
-I2C_eeprom::I2C_eeprom(const uint8_t deviceAddress, TwoWire * wire)
+I2C_eeprom::I2C_eeprom(const uint8_t deviceAddress, TwoWire * wire) :
+            I2C_eeprom(deviceAddress, I2C_PAGESIZE_24LC256, wire)
 {
-    I2C_eeprom(deviceAddress, I2C_PAGESIZE_24LC256, wire);
 }
 
 
@@ -313,7 +313,7 @@ uint32_t I2C_eeprom::determineSize(const bool debug)
 
 uint8_t I2C_eeprom::getPageSize(uint32_t deviceSize)
 {
-    //  determine page size from device size 
+    //  determine page size from device size
     //  based on Microchip 24LCXX data sheets.
     if (deviceSize <= I2C_DEVICESIZE_24LC02) return 8;
     if (deviceSize <= I2C_DEVICESIZE_24LC16) return 16;
