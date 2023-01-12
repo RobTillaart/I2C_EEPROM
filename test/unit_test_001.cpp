@@ -145,7 +145,9 @@ unittest(test_setPageSize)
 {
   I2C_eeprom EE(0x50, 0x8000);
 
+  assertEqual(EE.setPageSize(129), 128);
   assertEqual(EE.setPageSize(128), 128);
+  assertEqual(EE.setPageSize(127), 64);
   assertEqual(EE.setPageSize(65),  64);
   assertEqual(EE.setPageSize(64),  64);
   assertEqual(EE.setPageSize(63),  32);
