@@ -14,14 +14,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 
 ## [1.7.1] - 2023-01-12
-- add setDeviceSize() 
+- add setDeviceSize()
 - add setPageSize()
 - use setDeviceSize() in constructor to force power of 2.
 - update unit test
 - update GitHub actions
 - update license
 - update readme.md
-- minor edits 
+- minor edits
 
 ## [1.7.0] - 2022-12-02
 - fix #48 rewrote constructor.

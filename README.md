@@ -60,8 +60,8 @@ constructor, with optional Wire interface.
 - **bool begin()** initializes the I2C bus with the default pins.
 Furthermore it checks if the deviceAddress is available on the I2C bus.
 Returns true if deviceAddress is found on the bus, false otherwise.
-- **bool begin(uint8_t sda, uint8_t scl)** (ESP32 / ESP8266 only)
-initializes the I2C bus with the specified pins, thereby overruling the default pins.
+- **bool begin(uint8_t sda, uint8_t scl)** for ESP32 / ESP8266  / RP2040 and alike.
+Initializes the I2C bus with the specified pins, thereby overruling the default pins.
 Furthermore it checks if the deviceAddress is available on the I2C bus.
 Returns true if deviceAddress is found on the bus, false otherwise.
 - **bool isConnected()** test to see if deviceAddress is found on the bus.

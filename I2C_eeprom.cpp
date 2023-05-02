@@ -53,7 +53,7 @@ I2C_eeprom::I2C_eeprom(const uint8_t deviceAddress, const uint32_t deviceSize, T
 }
 
 
-#if defined (ESP8266) || defined(ESP32)
+#if defined(ESP8266) || defined(ESP32)
 bool I2C_eeprom::begin(uint8_t sda, uint8_t scl)
 {
    //  if (_wire == 0) Serial.println("zero");  //  test #48
@@ -71,7 +71,7 @@ bool I2C_eeprom::begin(uint8_t sda, uint8_t scl)
 #endif
 
 
-#ifdef PICO_RP2040
+#if defined(PICO_RP2040)
 bool I2C_eeprom::begin(uint8_t sda, uint8_t scl)
 {
   if ((sda < 255) && (scl < 255))
@@ -83,7 +83,7 @@ bool I2C_eeprom::begin(uint8_t sda, uint8_t scl)
   _lastWrite = 0;
   return isConnected();
 }
-#endif 
+#endif
 
 
 bool I2C_eeprom::begin()
@@ -352,7 +352,7 @@ uint8_t I2C_eeprom::getPageSize(uint32_t deviceSize)
 }
 
 
-uint32_t I2C_eeprom::getLastWrite()  
+uint32_t I2C_eeprom::getLastWrite()
 {
   return _lastWrite;
 }
@@ -386,13 +386,13 @@ uint8_t I2C_eeprom::setPageSize(uint8_t pageSize)
 }
 
 
-void I2C_eeprom::setExtraWriteCycleTime(uint8_t ms) 
+void I2C_eeprom::setExtraWriteCycleTime(uint8_t ms)
 {
   _extraTWR = ms;
 }
 
 
-uint8_t I2C_eeprom::getExtraWriteCycleTime() 
+uint8_t I2C_eeprom::getExtraWriteCycleTime()
 {
   return _extraTWR;
 }
@@ -445,7 +445,7 @@ void I2C_eeprom::_beginTransmission(const uint16_t memoryAddress)
     _wire->beginTransmission(addr);
   }
 
-  //  Address Low Byte 
+  //  Address Low Byte
   //  (or single byte for chips 16K or smaller that have one-word addresses)
   _wire->write((memoryAddress & 0xFF));
 }
@@ -525,7 +525,7 @@ void I2C_eeprom::_waitEEReady()
   //  Wait until EEPROM gives ACK again.
   //  this is a bit faster than the hardcoded 5 milliSeconds
   //  TWR = WriteCycleTime
-  uint32_t waitTime = I2C_WRITEDELAY + _extraTWR * 1000UL;  
+  uint32_t waitTime = I2C_WRITEDELAY + _extraTWR * 1000UL;
   while ((micros() - _lastWrite) <= waitTime)
   {
     _wire->beginTransmission(_deviceAddress);
