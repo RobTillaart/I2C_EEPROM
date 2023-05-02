@@ -53,7 +53,7 @@ constructor, with optional Wire interface.
 Furthermore it checks if the deviceAddress is available on the I2C bus.
 Returns true if deviceAddress is found on the bus, false otherwise.
 - **bool begin(uint8_t sda, uint8_t scl)** (ESP32 / ESP8266 only)
-initializes the I2C bus with the specified pins, therby overruling the default pins.
+initializes the I2C bus with the specified pins, thereby overruling the default pins.
 Furthermore it checks if the deviceAddress is available on the I2C bus.
 Returns true if deviceAddress is found on the bus, false otherwise.
 - **bool isConnected()** test to see if deviceAddress is found on the bus.
@@ -110,7 +110,8 @@ Same as write and update functions above. Returns true if successful, false indi
 - **uint8_t  getPageSize(uint32_t deviceSize)** idem
 - **uint32_t getLastWrite()** idem
 - **uint32_t determineSize(bool debug = false)**
-function that determines the size of the EEPROM by detecting when a memory address is folded upon memory address 0.
+function that determines the size of the EEPROM by detecting when a memory address 
+is folded upon memory address 0.
 It is based upon the observation that memory wraps around.
 The debug flag prints some output to Serial.
 
@@ -168,10 +169,13 @@ than 5 milliseconds which is the minimum.
 - **void     setExtraWriteCycleTime(uint8_t ms)** idem
 - **uint8_t  getExtraWriteCycleTime()** idem
 
+Since 1.7.2 it is also possible to adjust the **I2C_WRITEDELAY** in the .h file
+or overrule the define on the command line.
+
 
 ## Limitation
 
-The library does not offer multiple EEPROMS as one continuous storage device.
+The library does not offer multiple EEPROMS as one continuous storage device. 
 
 
 ## Operation
@@ -180,19 +184,21 @@ See examples
 
 ## Future
 
-#### must
+#### Must
+
 - improve documentation
 
-#### should
+#### Should
+
 - investigate multi-EEPROM storage
   - wrapper class?
-- improve error handling, write functions should return bytes written or so.
-- move code from .h to .cpp?
+- improve error handling, 
+  - write functions should return bytes written or so.
 - make deviceSize explicit in examples?
-- AT24C32 has a WriteCycle Time of max 20 ms 
-  - make a define of the 5000 ?
 
-#### could
+
+#### Could
+
 - investigate smarter strategy for **updateBlock()** 
   => find first and last changed position could possibly result in less writes.
 - can **setBlock()** use strategies from **updateBlock()**
@@ -202,3 +208,4 @@ See examples
   - circular buffer? (see FRAM library)
   - dump function?
 
+#### Wont

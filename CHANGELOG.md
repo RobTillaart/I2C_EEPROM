@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 
+## [1.7.2] - 2023-05-02
+- fix #53 support RP2040 (kudos to jotamachuca)
+- move code from .h to .cpp
+- make I2C_WRITEDELAY overridable
+- minor edits
+
+
 ## [1.7.1] - 2023-01-12
 - add setDeviceSize() 
 - add setPageSize()
@@ -15,7 +22,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - update license
 - update readme.md
 - minor edits 
-
 
 ## [1.7.0] - 2022-12-02
 - fix #48 rewrote constructor.
