@@ -20,6 +20,11 @@ MicroChip 24LC512, 24LC256, 24LC64, 24LC32, 24LC16, 24LC08, 24LC04, 24LC02, 24LC
 The **I2C_eeprom_cyclic_store** interface is documented [here](README_cyclic_store.md)
 
 
+#### Links
+
+- https://github.com/RobTillaart/I2C_24LC1025
+
+
 ## Schematic
 
 ```cpp
@@ -31,11 +36,14 @@ The **I2C_eeprom_cyclic_store** interface is documented [here](README_cyclic_sto
         +-------+
 
 default address = 0x50 .. 0x57 depending on three address lines
-
 ```
 
 
 ## Interface
+
+```cpp
+#include "I2C_eeprom.h"
+```
 
 The interface is kept quite identical to the I2C_24LC1025 library.
 https://github.com/RobTillaart/I2C_24LC1025
