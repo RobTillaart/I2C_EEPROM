@@ -66,7 +66,8 @@ public:
     */
   I2C_eeprom(const uint8_t deviceAddress, const uint32_t deviceSize, TwoWire *wire = &Wire);
 
-#if defined(ESP8266) || defined(ESP32) || defined(RP2040_PATCH_53)
+//  #if defined(ESP8266) || defined(ESP32) || defined(RP2040_PATCH_53)
+#if defined(ESP8266) || defined(ESP32) || (defined(ARDUINO_ARCH_RP2040) && !defined(__MBED__))
   //  set the I2C pins explicitly (overrule)
   bool     begin(uint8_t sda, uint8_t scl);
 #endif

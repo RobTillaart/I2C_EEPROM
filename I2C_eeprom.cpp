@@ -70,7 +70,7 @@ bool I2C_eeprom::begin(uint8_t sda, uint8_t scl)
   return isConnected();
 }
 
-#elif defined(RP2040_PATCH_53)
+#elif defined(ARDUINO_ARCH_RP2040) && !defined(__MBED__)
 
 bool I2C_eeprom::begin(uint8_t sda, uint8_t scl)
 {
