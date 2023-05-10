@@ -2,7 +2,7 @@
 //
 //    FILE: I2C_eeprom.h
 //  AUTHOR: Rob Tillaart
-// VERSION: 1.7.2
+// VERSION: 1.7.3
 // PURPOSE: Arduino Library for external I2C EEPROM 24LC256 et al.
 //     URL: https://github.com/RobTillaart/I2C_EEPROM.git
 
@@ -11,7 +11,7 @@
 #include "Wire.h"
 
 
-#define I2C_EEPROM_VERSION          (F("1.7.2"))
+#define I2C_EEPROM_VERSION          (F("1.7.3"))
 
 
 #define I2C_DEVICESIZE_24LC512      65536
@@ -24,6 +24,13 @@
 #define I2C_DEVICESIZE_24LC04         512
 #define I2C_DEVICESIZE_24LC02         256
 #define I2C_DEVICESIZE_24LC01         128
+
+
+//  Patch to fix issue #53 as original solution was breaking
+//  existing compilations See #55
+//  uncomment next line if you need to compile for 
+//  RP2040 with earlephilhower boards module
+//  #define RP2040_PATCH_53             true
 
 
 //  AT24C32 has a WriteCycle Time of max 20 ms
@@ -59,7 +66,7 @@ public:
     */
   I2C_eeprom(const uint8_t deviceAddress, const uint32_t deviceSize, TwoWire *wire = &Wire);
 
-#if defined(ESP8266) || defined(ESP32) || defined(PICO_RP2040)
+#if defined(ESP8266) || defined(ESP32) || (defined(RP2040_PATCH_53)
   //  set the I2C pins explicitly (overrule)
   bool     begin(uint8_t sda, uint8_t scl);
 #endif
