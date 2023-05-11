@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [1.7.3] - 2023-05-10
 - fix #55 ==> redo fix #53
-  - add **#define RP2040_PATCH_53** until better solution comes up.
+  - add test to detect **MBED** and **RP2040**
 - adjust **I2C_BUFFERSIZE** for RP2040 to 128.
 - update readme.md
 

@@ -26,13 +26,6 @@
 #define I2C_DEVICESIZE_24LC01         128
 
 
-//  Patch to fix issue #53 as original solution was breaking
-//  existing compilations See #55
-//  uncomment next line if you need to compile for 
-//  RP2040 with earlephilhower boards module
-//  #define RP2040_PATCH_53             true
-
-
 //  AT24C32 has a WriteCycle Time of max 20 ms
 //  so one need to set I2C_WRITEDELAY to 20000.
 //  can also be done on command line.
@@ -66,7 +59,8 @@ public:
     */
   I2C_eeprom(const uint8_t deviceAddress, const uint32_t deviceSize, TwoWire *wire = &Wire);
 
-//  #if defined(ESP8266) || defined(ESP32) || defined(RP2040_PATCH_53)
+
+//  MBED test ==> see #55, #53
 #if defined(ESP8266) || defined(ESP32) || (defined(ARDUINO_ARCH_RP2040) && !defined(__MBED__))
   //  set the I2C pins explicitly (overrule)
   bool     begin(uint8_t sda, uint8_t scl);

@@ -20,17 +20,13 @@ MicroChip 24LC512, 24LC256, 24LC64, 24LC32, 24LC16, 24LC08, 24LC04, 24LC02, 24LC
 The **I2C_eeprom_cyclic_store** interface is documented [here](README_cyclic_store.md)
 
 
-#### RP2040 patch
+#### RP2040
 
-There are at least two boards files for the RP2040 that use a different Wire libraries.
-See issues #53 and #55 for details.
+There are at least two boards modules for the RP2040 that use a different Wire libraries. 
+One from "Earle F. Philhower" and an "MBED" one. See issues #53 and #55 for details.
 
-In 1.7.3 there is a patch for #53 by means of a ```#define RP2040_PATCH_53   true```.
-See the I2C_EEPROM.h file.
-This line is commented by default to let the library behave in a backwards compatible mode.
-If one uses the **earlephilhower** board module and want to set the SDA and SCL lines, 
-this line can be uncommented.
-
+In 1.7.3 defines are checked to select between these two and as far as tested this seems
+to solve the issue #53 while being backwards compatible.
 If a better solution is found, it will be implemented. 
 
 
