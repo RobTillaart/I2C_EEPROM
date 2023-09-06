@@ -55,7 +55,7 @@ I2C_eeprom::I2C_eeprom(const uint8_t deviceAddress, const uint32_t deviceSize, T
 
 #if defined(ESP8266) || defined(ESP32)
 
-bool I2C_eeprom::begin(uint8_t sda, uint8_t scl, uint8_t writeProtect)
+bool I2C_eeprom::begin(uint8_t sda, uint8_t scl, uint8_t writeProtectPin)
 {
    //  if (_wire == 0) Serial.println("zero");  //  test #48
   if ((sda < 255) && (scl < 255))
@@ -67,13 +67,17 @@ bool I2C_eeprom::begin(uint8_t sda, uint8_t scl, uint8_t writeProtect)
     _wire->begin();
   }
   _lastWrite = 0;
-  _writeProtectPin = writeProtect;
+  _writeProtectPin = writeProtectPin;
+  if (_writeProtectPin >= 0)
+  {
+    pinMode(_writeProtectPin, OUTPUT);
+  }
   return isConnected();
 }
 
 #elif defined(ARDUINO_ARCH_RP2040) && !defined(__MBED__)
 
-bool I2C_eeprom::begin(uint8_t sda, uint8_t scl, uint8_t writeProtect)
+bool I2C_eeprom::begin(uint8_t sda, uint8_t scl, uint8_t writeProtectPin)
 {
   if ((sda < 255) && (scl < 255))
   {
@@ -82,19 +86,27 @@ bool I2C_eeprom::begin(uint8_t sda, uint8_t scl, uint8_t writeProtect)
     _wire->begin();
   }
   _lastWrite = 0;
-  _writeProtectPin = writeProtect;
+  _writeProtectPin = writeProtectPin;
+  if (_writeProtectPin >= 0)
+  {
+    pinMode(_writeProtectPin, OUTPUT);
+  }
   return isConnected();
 }
 
 #endif
 
 
-bool I2C_eeprom::begin(uint8_t writeProtect)
+bool I2C_eeprom::begin(uint8_t writeProtectPin)
 {
   //  if (_wire == 0) Serial.println("zero");  //  test #48
   _wire->begin();
   _lastWrite = 0;
-  _writeProtectPin = writeProtect;
+  _writeProtectPin = writeProtectPin;
+  if (_writeProtectPin >= 0)
+  {
+    pinMode(_writeProtectPin, OUTPUT);
+  }
   return isConnected();
 }
 
@@ -407,20 +419,28 @@ uint8_t I2C_eeprom::getExtraWriteCycleTime()
 //
 void I2C_eeprom::enableWrite()
 {
-  digitalWrite(_writeProtectPin, LOW);
+  if (_writeProtectPin >= 0)
+  {
+    digitalWrite(_writeProtectPin, LOW);
+  }
 }
 
 
 void I2C_eeprom::disableWrite()
 {
-  digitalWrite(_writeProtectPin, HIGH);
+  if (_writeProtectPin >= 0)
+  {
+    digitalWrite(_writeProtectPin, HIGH);
+  }
 }
 
 
 void I2C_eeprom::setAutoWriteProtect(bool b)
 {
-  if (_writeProtectPin < 0) return;
-  _autoWriteProtect = b;
+  if (_writeProtectPin >= 0)
+  {
+    _autoWriteProtect = b;
+  }
 }
 
 

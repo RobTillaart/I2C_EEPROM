@@ -71,15 +71,15 @@ Most important difference is 32 bit memory addresses.
 optional Wire interface.
 - **I2C_eeprom(uint8_t deviceAddress, uint32_t deviceSize, TwoWire \*wire = &Wire)** 
 constructor, with optional Wire interface.
-- **bool begin(uint8_t writeProtect = -1)** initializes the I2C bus with the default pins.
+- **bool begin(uint8_t writeProtectPin = -1)** initializes the I2C bus with the default pins.
 Furthermore it checks if the deviceAddress is available on the I2C bus.
 Returns true if deviceAddress is found on the bus, false otherwise.
-Optionally one can set the **WP** writeProtect pin. (see below).
-- **bool begin(uint8_t sda, uint8_t scl, uint8_t writeProtect = -1)** for ESP32 / ESP8266  / RP2040 and alike.
+Optionally one can set the **WP** writeProtect pin. (see section below).
+- **bool begin(uint8_t sda, uint8_t scl, uint8_t writeProtectPin = -1)** for ESP32 / ESP8266  / RP2040 and alike.
 Initializes the I2C bus with the specified pins, thereby overruling the default pins.
 Furthermore it checks if the deviceAddress is available on the I2C bus.
 Returns true if deviceAddress is found on the bus, false otherwise.
-Optionally one can set the **WP** writeProtect pin. (see below).
+Optionally one can set the **WP** writeProtect pin. (see section below).
 - **bool isConnected()** test to see if deviceAddress is found on the bus.
 
 
