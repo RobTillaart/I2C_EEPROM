@@ -37,6 +37,11 @@ getLastWrite	KEYWORD2
 setExtraWriteCycleTime	KEYWORD2
 getExtraWriteCycleTime	KEYWORD2
 
+setWriteProtect	KEYWORD2
+getWriteProtect	KEYWORD2
+setAutoWriteProtect	KEYWORD2
+
+
 # I2C_eeprom_cyclic_store
 format	KEYWORD2
 read	KEYWORD2

@@ -1,7 +1,7 @@
 //
 //    FILE: I2C_eeprom.cpp
 //  AUTHOR: Rob Tillaart
-// VERSION: 1.7.3
+// VERSION: 1.7.4
 // PURPOSE: Arduino Library for external I2C EEPROM 24LC256 et al.
 //     URL: https://github.com/RobTillaart/I2C_EEPROM.git
 
@@ -55,7 +55,7 @@ I2C_eeprom::I2C_eeprom(const uint8_t deviceAddress, const uint32_t deviceSize, T
 
 #if defined(ESP8266) || defined(ESP32)
 
-bool I2C_eeprom::begin(uint8_t sda, uint8_t scl)
+bool I2C_eeprom::begin(uint8_t sda, uint8_t scl, uint8_t writeProtect)
 {
    //  if (_wire == 0) Serial.println("zero");  //  test #48
   if ((sda < 255) && (scl < 255))
@@ -67,12 +67,13 @@ bool I2C_eeprom::begin(uint8_t sda, uint8_t scl)
     _wire->begin();
   }
   _lastWrite = 0;
+  _writeProtectPin = writeProtect;
   return isConnected();
 }
 
 #elif defined(ARDUINO_ARCH_RP2040) && !defined(__MBED__)
 
-bool I2C_eeprom::begin(uint8_t sda, uint8_t scl)
+bool I2C_eeprom::begin(uint8_t sda, uint8_t scl, uint8_t writeProtect)
 {
   if ((sda < 255) && (scl < 255))
   {
@@ -81,17 +82,19 @@ bool I2C_eeprom::begin(uint8_t sda, uint8_t scl)
     _wire->begin();
   }
   _lastWrite = 0;
+  _writeProtectPin = writeProtect;
   return isConnected();
 }
 
 #endif
 
 
-bool I2C_eeprom::begin()
+bool I2C_eeprom::begin(uint8_t writeProtect)
 {
   //  if (_wire == 0) Serial.println("zero");  //  test #48
   _wire->begin();
   _lastWrite = 0;
+  _writeProtectPin = writeProtect;
   return isConnected();
 }
 
@@ -399,6 +402,33 @@ uint8_t I2C_eeprom::getExtraWriteCycleTime()
 }
 
 
+//
+//  WRITEPROTECT
+//
+void I2C_eeprom::enableWrite()
+{
+  digitalWrite(_writeProtectPin, LOW);
+}
+
+
+void I2C_eeprom::disableWrite()
+{
+  digitalWrite(_writeProtectPin, HIGH);
+}
+
+
+void I2C_eeprom::setAutoWriteProtect(bool b)
+{
+  if (_writeProtectPin < 0) return;
+  _autoWriteProtect = b;
+}
+
+
+bool I2C_eeprom::getAutoWriteProtect()
+{
+  return _autoWriteProtect;
+}
+
 
 ////////////////////////////////////////////////////////////////////
 //
@@ -457,10 +487,20 @@ void I2C_eeprom::_beginTransmission(const uint16_t memoryAddress)
 int I2C_eeprom::_WriteBlock(const uint16_t memoryAddress, const uint8_t * buffer, const uint8_t length)
 {
   _waitEEReady();
+  if (_autoWriteProtect)
+  {
+    digitalWrite(_writeProtectPin, LOW);
+  }
 
   this->_beginTransmission(memoryAddress);
   _wire->write(buffer, length);
   int rv = _wire->endTransmission();
+
+  if (_autoWriteProtect)
+  {
+    digitalWrite(_writeProtectPin, HIGH);
+  }
+
   _lastWrite = micros();
 
   yield();     // For OS scheduling
@@ -529,9 +569,11 @@ void I2C_eeprom::_waitEEReady()
   uint32_t waitTime = I2C_WRITEDELAY + _extraTWR * 1000UL;
   while ((micros() - _lastWrite) <= waitTime)
   {
-    _wire->beginTransmission(_deviceAddress);
-    int x = _wire->endTransmission();
-    if (x == 0) return;
+    if (isConnected()) return;
+    //  TODO remove pre 1.7.4 code
+    // _wire->beginTransmission(_deviceAddress);
+    // int x = _wire->endTransmission();
+    // if (x == 0) return;
     yield();     //  For OS scheduling
   }
   return;

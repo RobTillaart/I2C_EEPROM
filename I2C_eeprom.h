@@ -2,7 +2,7 @@
 //
 //    FILE: I2C_eeprom.h
 //  AUTHOR: Rob Tillaart
-// VERSION: 1.7.3
+// VERSION: 1.7.4
 // PURPOSE: Arduino Library for external I2C EEPROM 24LC256 et al.
 //     URL: https://github.com/RobTillaart/I2C_EEPROM.git
 
@@ -11,7 +11,7 @@
 #include "Wire.h"
 
 
-#define I2C_EEPROM_VERSION          (F("1.7.3"))
+#define I2C_EEPROM_VERSION          (F("1.7.4"))
 
 
 #define I2C_DEVICESIZE_24LC512      65536
@@ -63,10 +63,10 @@ public:
 //  MBED test ==> see #55, #53
 #if defined(ESP8266) || defined(ESP32) || (defined(ARDUINO_ARCH_RP2040) && !defined(__MBED__))
   //  set the I2C pins explicitly (overrule)
-  bool     begin(uint8_t sda, uint8_t scl);
+  bool     begin(uint8_t sda, uint8_t scl, uint8_t writeProtect = -1);
 #endif
   //  use default I2C pins.
-  bool     begin();
+  bool     begin(uint8_t writeProtect = -1);
   bool     isConnected();
 
 
@@ -126,6 +126,14 @@ public:
   void     setExtraWriteCycleTime(uint8_t ms);
   uint8_t  getExtraWriteCycleTime();
 
+  //  WRITEPROTECT
+  //  works only if WP pin is defined in begin().
+  //  see readme.md
+  void     enableWrite();
+  void     disableWrite();
+  void     setAutoWriteProtect(bool b);
+  bool     getAutoWriteProtect();
+
 
 private:
   uint8_t  _deviceAddress;
@@ -133,6 +141,7 @@ private:
   uint32_t _deviceSize = 0;
   uint8_t  _pageSize   = 0;
   uint8_t  _extraTWR   = 0;  //  milliseconds
+
 
   //  24LC32..24LC512 use two bytes for memory address
   //  24LC01..24LC16  use one-byte addresses + part of device address
@@ -153,6 +162,9 @@ private:
   TwoWire * _wire;
 
   bool     _debug = false;
+
+  int8_t   _writeProtectPin = -1;
+  bool     _autoWriteProtect = false;
 
   UNIT_TEST_FRIEND;
 };
