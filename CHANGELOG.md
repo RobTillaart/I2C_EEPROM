@@ -9,14 +9,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [1.7.4] - 2023-09-06
 - solve #57 add support for WriteProtectPin
 - add writeProtectPin as optional parameter in **begin()**
-- add **void enableWrite()**
-- add **void disableWrite()**
+- add **bool hasWriteProtectPin()**
+- add **void allowWrite()**
+- add **void preventWrite()**
 - add **void setAutoWriteProtect(bool b)**
 - add **bool getAutoWriteProtect()**
 - optimized **waitEEReady()**
 - update keywords.txt
 - update readme.md
-
 
 
 ## [1.7.3] - 2023-05-10

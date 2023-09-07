@@ -71,6 +71,7 @@ bool I2C_eeprom::begin(uint8_t sda, uint8_t scl, uint8_t writeProtectPin)
   if (_writeProtectPin >= 0)
   {
     pinMode(_writeProtectPin, OUTPUT);
+    preventWrite();
   }
   return isConnected();
 }
@@ -90,6 +91,7 @@ bool I2C_eeprom::begin(uint8_t sda, uint8_t scl, uint8_t writeProtectPin)
   if (_writeProtectPin >= 0)
   {
     pinMode(_writeProtectPin, OUTPUT);
+    preventWrite();
   }
   return isConnected();
 }
@@ -106,6 +108,7 @@ bool I2C_eeprom::begin(uint8_t writeProtectPin)
   if (_writeProtectPin >= 0)
   {
     pinMode(_writeProtectPin, OUTPUT);
+    preventWrite();
   }
   return isConnected();
 }
@@ -417,18 +420,24 @@ uint8_t I2C_eeprom::getExtraWriteCycleTime()
 //
 //  WRITEPROTECT
 //
-void I2C_eeprom::enableWrite()
+bool I2C_eeprom::hasWriteProtectPin()
 {
-  if (_writeProtectPin >= 0)
+  return (_writeProtectPin >= 0);
+}
+
+
+void I2C_eeprom::allowWrite()
+{
+  if (hasWriteProtectPin())
   {
     digitalWrite(_writeProtectPin, LOW);
   }
 }
 
 
-void I2C_eeprom::disableWrite()
+void I2C_eeprom::preventWrite()
 {
-  if (_writeProtectPin >= 0)
+  if (hasWriteProtectPin())
   {
     digitalWrite(_writeProtectPin, HIGH);
   }
@@ -437,7 +446,7 @@ void I2C_eeprom::disableWrite()
 
 void I2C_eeprom::setAutoWriteProtect(bool b)
 {
-  if (_writeProtectPin >= 0)
+  if (hasWriteProtectPin())
   {
     _autoWriteProtect = b;
   }

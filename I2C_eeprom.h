@@ -126,11 +126,13 @@ public:
   void     setExtraWriteCycleTime(uint8_t ms);
   uint8_t  getExtraWriteCycleTime();
 
+
   //  WRITEPROTECT
   //  works only if WP pin is defined in begin().
   //  see readme.md
-  void     enableWrite();
-  void     disableWrite();
+  inline bool hasWriteProtectPin();
+  void     allowWrite();
+  void     preventWrite();
   void     setAutoWriteProtect(bool b);
   bool     getAutoWriteProtect();
 

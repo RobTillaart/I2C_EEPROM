@@ -75,11 +75,13 @@ constructor, with optional Wire interface.
 Furthermore it checks if the deviceAddress is available on the I2C bus.
 Returns true if deviceAddress is found on the bus, false otherwise.
 Optionally one can set the **WP** writeProtect pin. (see section below).
+If the **WP** pin is defined the default will be to **not** allow writing.
 - **bool begin(uint8_t sda, uint8_t scl, uint8_t writeProtectPin = -1)** for ESP32 / ESP8266  / RP2040 and alike.
 Initializes the I2C bus with the specified pins, thereby overruling the default pins.
 Furthermore it checks if the deviceAddress is available on the I2C bus.
 Returns true if deviceAddress is found on the bus, false otherwise.
 Optionally one can set the **WP** writeProtect pin. (see section below).
+If the **WP** pin is defined the default will be to **not** allow writing.
 - **bool isConnected()** test to see if deviceAddress is found on the bus.
 
 
@@ -204,6 +206,11 @@ or overrule the define on the command line.
 The library can now control the **WP** = WriteProtect pin of the EEPROM.
 To do this one should connect a GPIO pin of the MCU to the **WP** pin of the EEPROM.
 Furthermore the **WP** should be defined as a parameter in **begin()**.
+If the **WP** pin is defined the default will be to **not** allow writing.
+The user has to enable writing either by manual or automatic control.
+
+Status
+- **bool hasWriteProtectPin()** returns true if **WP** has been set.
 
 Automatic control
 - **void setAutoWriteProtect(bool b)** if set to true, the library enables writing
@@ -212,8 +219,8 @@ If **setAutoWriteProtect()** is set to false (== default) the manual control is 
 - **bool getAutoWriteProtect()** get current setting.
 
 Manual control
-- **void enableWrite()** allows writing by setting **WP** to LOW.
-- **void disableWrite()** disables writing by setting **WP** to HIGH.
+- **void allowWrite()** allows writing by setting **WP** to LOW.
+- **void preventWrite()** disables writing by setting **WP** to HIGH.
 
 
 ## Limitation
