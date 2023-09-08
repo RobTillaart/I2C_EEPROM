@@ -63,10 +63,10 @@ public:
 //  MBED test ==> see #55, #53
 #if defined(ESP8266) || defined(ESP32) || (defined(ARDUINO_ARCH_RP2040) && !defined(__MBED__))
   //  set the I2C pins explicitly (overrule)
-  bool     begin(uint8_t sda, uint8_t scl, uint8_t writeProtectPin = -1);
+  bool     begin(uint8_t sda, uint8_t scl, int8_t writeProtectPin = -1);
 #endif
   //  use default I2C pins.
-  bool     begin(uint8_t writeProtectPin = -1);
+  bool     begin(int8_t writeProtectPin = -1);
   bool     isConnected();
 
 
