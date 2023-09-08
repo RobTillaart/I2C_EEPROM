@@ -203,11 +203,17 @@ or overrule the define on the command line.
 
 (since 1.7.4)
 
-The library can now control the **WP** = WriteProtect pin of the EEPROM.
+The library can control the **WP** = WriteProtect pin of the EEPROM.
 To do this one should connect a GPIO pin of the MCU to the **WP** pin of the EEPROM.
 Furthermore the **WP** should be defined as a parameter in **begin()**.
 If the **WP** pin is defined the default will be to **not** allow writing.
 The user has to enable writing either by manual or automatic control.
+
+In the automatic mode the library only allows writing to the EEPROM when it
+actually writes to the EEPROM. 
+So it keeps the EEPROM in a read only mode as much as possible.
+This prevents accidental writes due to (noisy) signals on the I2C bus. (#57)
+
 
 Status
 - **bool hasWriteProtectPin()** returns true if **WP** has been set.
