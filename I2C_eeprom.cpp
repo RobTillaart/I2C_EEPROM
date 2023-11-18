@@ -394,12 +394,21 @@ uint32_t I2C_eeprom::setDeviceSize(uint32_t deviceSize)
 
 uint8_t I2C_eeprom::setPageSize(uint8_t pageSize)
 {
-  uint8_t size = 8;
-  //  force power of 2.
-  while ((size <= 128) && ( size <= pageSize))
-  {
-    _pageSize = size;
-    size *= 2;
+  // force power of 2.
+  if (pageSize >= 128) {
+      _pageSize = 128;
+  }
+  else if (pageSize >= 64) {
+      _pageSize = 64;
+  }
+  else if (pageSize >= 32) {
+      _pageSize = 32;
+  }
+  else if (pageSize >= 16) {
+      _pageSize = 16;
+  }
+  else {
+      _pageSize = 8;
   }
   return _pageSize;
 }
