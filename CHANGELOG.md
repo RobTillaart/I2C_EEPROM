@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - simplify **begin()**, remove setting Wire pins from library.
 - add **getAddress()**
 - update readme.md
+- update examples
 
 
 ## [1.7.4] - 2023-09-06
