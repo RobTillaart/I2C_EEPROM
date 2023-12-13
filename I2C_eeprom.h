@@ -104,6 +104,7 @@ public:
 
   //  Meta data functions
   uint32_t determineSize(const bool debug = false);
+  uint32_t determineSizeNoWrite();
   uint32_t getDeviceSize();
   uint8_t  getPageSize();
   uint8_t  getPageSize(uint32_t deviceSize);
