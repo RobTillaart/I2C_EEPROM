@@ -304,8 +304,8 @@ uint32_t I2C_eeprom::determineSize(const bool debug)
   return 0;
 }
 
-
 //  new 1.8.1 #61
+//  updated 1.8.2 #63
 //
 // Returns:
 //  0 if device size cannot be determined or device is not online
@@ -346,6 +346,9 @@ uint32_t I2C_eeprom::determineSizeNoWrite()
           //Default dataFirstBytes value is 0xFF or 0x00
           isModifiedFirstSector = true;
       }
+
+      if (dataIsDifferent && isModifiedFirstSector)
+          break;
   }
 
   if (!isModifiedFirstSector)
@@ -399,7 +402,7 @@ uint8_t I2C_eeprom::getPageSize()
 uint8_t I2C_eeprom::getPageSize(uint32_t deviceSize)
 {
     //  determine page size from device size
-    //  based on Microchip 24LCXX dataFirstBytes sheets.
+    //  based on Microchip 24LCXX data sheets.
     if (deviceSize <= I2C_DEVICESIZE_24LC02) return 8;
     if (deviceSize <= I2C_DEVICESIZE_24LC16) return 16;
     if (deviceSize <= I2C_DEVICESIZE_24LC64) return 32;
