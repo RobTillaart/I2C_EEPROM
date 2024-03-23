@@ -232,7 +232,7 @@ bool I2C_eeprom::writeBlockVerify(const uint16_t memoryAddress, const uint8_t * 
 bool I2C_eeprom::setBlockVerify(const uint16_t memoryAddress, const uint8_t value, const uint16_t length)
 {
   if (setBlock(memoryAddress, value, length) != 0) return false;
-  uint8_t * data = malloc(length);
+  uint8_t * data = (uint8_t *) malloc(length);
   if (data == NULL) return false;
   if (readBlock(memoryAddress, data, length) != length) return false;
   for (uint16_t i = 0; i < length; i++)
