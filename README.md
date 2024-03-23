@@ -263,6 +263,8 @@ See examples
 - investigate smarter strategy for **updateBlock()** 
   => find first and last changed position could possibly result in less writes.
 - can **setBlock()** use strategies from **updateBlock()**
+- **pageBlock()**: incrBuffer is an implementation name, not a functional name.
+
 
 #### Wont
 
