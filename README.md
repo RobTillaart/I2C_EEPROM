@@ -52,13 +52,13 @@ before calling **I2C_eeprom.begin()**.
 
 ```cpp
         +---U---+
-    A0  | 1   8 |  VCC = +5V
+    A0  | 1   8 |  VCC = 1.7V to 5.5V
     A1  | 2   7 |   WP = write protect pin
     A2  | 3   6 |  SCL = I2C clock
    GND  | 4   5 |  SDA = I2C data
         +-------+
 
-default address = 0x50 .. 0x57 depending on three address lines
+Default address = 0x50 .. 0x57 depending on three address lines (A0, A1, A2).
 ```
 
 
