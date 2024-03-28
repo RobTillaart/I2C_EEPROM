@@ -131,6 +131,9 @@ Same as write and update functions above. Returns true if successful, false indi
 - **bool setBlockVerify(uint16_t memoryAddress, uint8_t value, uint16_t length)**
 - **bool updateByteVerify(uint16_t memoryAddress, uint8_t value)**
 - **bool updateBlockVerify(uint16_t memoryAddress, uint8_t \* buffer, uint16_t length)**
+- **bool verifyBlock(uint16_t memoryAddress, uint8_t \* buffer, uint16_t length)**
+Returns true is buffer equals memoryAddres for length bytes.
+
 
 
 ### Other
@@ -263,12 +266,15 @@ See examples
 - investigate smarter strategy for **updateBlock()** 
   => find first and last changed position could possibly result in less writes.
 - can **setBlock()** use strategies from **updateBlock()**
+- **pageBlock()**: incrBuffer is an implementation name, not a functional name.
+
 
 #### Wont
 
 - investigate the print interface?
   - circular buffer? (see FRAM library)
   - dump function?
+
 
 ## Support
 
