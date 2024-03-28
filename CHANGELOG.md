@@ -6,7 +6,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 
-## [1.8.3] - 2023-03-23
+## [1.8.3] - 2024-03-28
 - Fix #64, compiler warning.
 - add **verifyBlock(memoryAddress, buffer, length)**
 - add example **I2C_eeprom_verifyBlock.ino**

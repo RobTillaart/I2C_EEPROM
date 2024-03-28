@@ -237,7 +237,7 @@ bool I2C_eeprom::setBlockVerify(const uint16_t memoryAddress, const uint8_t valu
   if (readBlock(memoryAddress, data, length) != length) return false;
   for (uint16_t i = 0; i < length; i++)
   {
-    if (data[i] != value) 
+    if (data[i] != value)
     {
       free(data);
       return false;
@@ -403,7 +403,7 @@ uint32_t I2C_eeprom::determineSizeNoWrite()
         //Read is perfomed just over size (size + BUFSIZE), this will only work for devices with mem > size; therefore return size * 2
         _isAddressSizeTwoWords = addressSize;
         return size * 2;
-    }    
+    }
   }
   _isAddressSizeTwoWords = addressSize;
   return 0;
