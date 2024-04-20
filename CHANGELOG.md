@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [1.8.4] - 2024-04-20
 - Fix #70, increase length internal buffer.
-- add compile time flag **EN_AUTO_WRITE_PROTECT**
+- add compile time flag **EN_AUTO_WRITE_PROTECT** (thanks to microfoundry)
 - improve readability: cnt => count  addr => address
 - add URL to examples
 - minor edits.
