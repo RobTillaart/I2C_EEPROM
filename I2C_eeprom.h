@@ -171,11 +171,11 @@ private:
   //  TODO incrBuffer is an implementation name, not a functional name.
   int      _pageBlock(const uint16_t memoryAddress, const uint8_t * buffer, const uint16_t length, const bool incrBuffer);
   //  returns I2C status, 0 = OK
-  int      _WriteBlock(const uint16_t memoryAddress, const uint8_t * buffer, const uint8_t length);
+  int      _WriteBlock(const uint16_t memoryAddress, const uint8_t * buffer, const uint16_t length);
   //  returns bytes read.
-  uint8_t  _ReadBlock(const uint16_t memoryAddress, uint8_t * buffer, const uint8_t length);
+  uint8_t  _ReadBlock(const uint16_t memoryAddress, uint8_t * buffer, const uint16_t length);
   //  compare bytes in EEPROM.
-  bool     _verifyBlock(const uint16_t memoryAddress, const uint8_t * buffer, const uint8_t length);
+  bool     _verifyBlock(const uint16_t memoryAddress, const uint8_t * buffer, const uint16_t length);
 
   //  to optimize the write latency of the EEPROM
   void     _waitEEReady();
