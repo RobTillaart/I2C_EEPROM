@@ -38,6 +38,8 @@ If a better solution is found, it will be implemented.
 
 #### Breaking change
 
+Version 1.9.0 fixed a memory leak in **verifyBlock()**.
+
 Version 1.8.0 introduced a breaking change.
 You cannot set the pins in **begin()** any more.
 This reduces the dependency of processor dependent Wire implementations.
