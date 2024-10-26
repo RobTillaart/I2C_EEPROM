@@ -266,7 +266,8 @@ bool I2C_eeprom::updateByteVerify(const uint16_t memoryAddress, const uint8_t va
 //  return false if write or verify failed.
 bool I2C_eeprom::updateBlockVerify(const uint16_t memoryAddress, const uint8_t * buffer, const uint16_t length)
 {
-  updateBlock(memoryAddress, buffer, length);
+  //  zero bytes written means nothing needs to be verified
+  if (0 == updateBlock(memoryAddress, buffer, length)) return true;
   return verifyBlock(memoryAddress, buffer, length);
 }
 
