@@ -36,7 +36,7 @@
 //  PUBLIC FUNCTIONS
 //
 I2C_eeprom::I2C_eeprom(const uint8_t deviceAddress, TwoWire * wire) :
-            I2C_eeprom(deviceAddress, I2C_PAGESIZE_24LC256, wire)
+            I2C_eeprom(deviceAddress, I2C_DEVICESIZE_24LC256, wire)
 {
 }
 
