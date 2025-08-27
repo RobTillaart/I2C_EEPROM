@@ -26,6 +26,13 @@ Not supported is the identification page functions.
 The **I2C_eeprom_cyclic_store** interface is documented [here](README_cyclic_store.md)
 
 
+**Warning** 
+
+The user is responsible to verify the used memoryAddress (range) exists in the used EEPROM. (read / write / verify functions).
+The library does not check this. If the address is larger than the EEPROM size, 
+the address used will probably be memoryAddress % deviceSize.
+
+
 ### RP2040
 
 There are at least two boards modules for the RP2040 that use a different Wire libraries. 
@@ -41,10 +48,10 @@ If a better solution is found, it will be implemented.
 Version 1.9.0 fixed a memory leak in **verifyBlock()**.
 
 Version 1.8.0 introduced a breaking change.
-You cannot set the pins in **begin()** any more.
-This reduces the dependency of processor dependent Wire implementations.
+You cannot set the I2C pins in **begin()** any more.
+This reduces the dependency of processor dependent Wire (I2C) implementations.
 The user has to call **Wire.begin()** and can optionally set the Wire pins 
-before calling **I2C_eeprom.begin()**.
+(if the processor supports this), before calling **I2C_eeprom.begin()**.
 
 
 ### Related
@@ -91,7 +98,6 @@ too if they are behind the multiplexer.
 - https://github.com/RobTillaart/TCA9548
 
 
-
 ## Interface
 
 ```cpp
@@ -107,16 +113,39 @@ Most important difference is 32 bit memory addresses.
 ### Constructor
 
 - **I2C_eeprom(uint8_t deviceAddress, TwoWire \*wire = &Wire)** constructor, 
-optional Wire interface.
+optional Wire interface. The default deviceSize == I2C_DEVICESIZE_24LC256 (32KB), 
+which is the most often used I2C_EEPROM size.
+Be aware that if you use other sized EEPROMs you have to use the next constructor,
+and name the deviceSize explicitly, otherwise errors might occur.
 - **I2C_eeprom(uint8_t deviceAddress, uint32_t deviceSize, TwoWire \*wire = &Wire)** 
-constructor, with optional Wire interface.
-- **bool begin(uint8_t writeProtectPin = -1)** initializes the I2C bus with the default pins.
-Furthermore it checks if the deviceAddress is available on the I2C bus.
-Returns true if deviceAddress is found on the bus, false otherwise.
-Optionally one can set the **WP** writeProtect pin. (see section below).
+constructor, the deviceSize can be any of the defines below or its number equivalent.
+The Wire interface is optional, default Wire.
+- **bool begin(uint8_t writeProtectPin = -1)** Optionally one can set the **WP**
+writeProtect pin. (see section below). If defined, it is initialized.
 If the **WP** pin is defined, the default behaviour will be to **not** allow writing.
-- **bool isConnected()** test to see if deviceAddress is found on the bus.
+Furthermore it checks if the deviceAddress given in the constructor is available 
+on the defined I2C bus.
+Returns true if deviceAddress is found on the I2C bus, false otherwise.
+- **bool isConnected()** returns true if the address given in the constructor is
+available on the defined I2C bus.
 - **uint8_t getAddress()** returns deviceAddress set in the constructor.
+Convenience.
+
+
+Defined device sizes for constructor, more details see below
+
+|  Define                  |  bytes  |  Notes  |
+|:-------------------------|--------:|:--------|
+|  I2C_DEVICESIZE_24LC512  |  65536  |
+|  I2C_DEVICESIZE_24LC256  |  32768  |  most used 
+|  I2C_DEVICESIZE_24LC128  |  16384  |
+|  I2C_DEVICESIZE_24LC64   |   8192  |
+|  I2C_DEVICESIZE_24LC32   |   4096  |
+|  I2C_DEVICESIZE_24LC16   |   2048  |
+|  I2C_DEVICESIZE_24LC08   |   1024  |
+|  I2C_DEVICESIZE_24LC04   |    512  |
+|  I2C_DEVICESIZE_24LC02   |    256  |
+|  I2C_DEVICESIZE_24LC01   |    128  |
 
 
 ### Write functions
@@ -134,8 +163,11 @@ Returns I2C status, 0 = OK.
 
 ### Update functions
 
+Using update instead of write functions does not write if the value is the same.
+The price is an extra read() call, but if there is no change the gain is performance.
+
 - **int updateByte(uint16_t memoryAddress, uint8_t value)** write a single byte, 
-but only if changed.
+but only if the value has changed.
 Returns 0 if value was same or write succeeded.
 - **uint16_t updateBlock(uint16_t memoryAddress, uint8_t \* buffer, uint16_t length)** 
 write a buffer starting at the specified memory address, but only if changed.
@@ -148,6 +180,7 @@ Returns bytes actually written <= length.
 - **uint16_t readBlock(uint16_t memoryAddress, uint8_t \* buffer, uint16_t length)** 
 read length bytes into buffer starting at specified memory address.
 Returns the number of bytes read, which should be length.
+The user is responsible that the used buffer can hold length bytes.
 
 
 ### Verify functions
@@ -155,6 +188,7 @@ Returns the number of bytes read, which should be length.
 Since 1.6.0. - experimental, needs extensive testing.
 
 Same as write and update functions above. Returns true if successful, false indicates an error.
+The user is responsible that the used buffer can hold length bytes.
 
 - **bool writeByteVerify(uint16_t memoryAddress, uint8_t value)**
 - **bool writeBlockVerify(uint16_t memoryAddress, uint8_t \* buffer,  uint16_t length)**
@@ -169,8 +203,10 @@ Returns true is buffer equals memoryAddres for length bytes.
 
 - **uint32_t getDeviceSize()** idem
 - **uint8_t  getPageSize()** idem
-- **uint8_t  getPageSize(uint32_t deviceSize)** idem
-- **uint32_t getLastWrite()** idem
+- **uint8_t  calculatePageSize(uint32_t deviceSize)** calculates the pageSize of a device
+with deviceSize. Note it does not set the pageSize!
+-- **uint8_t  getPageSize(uint32_t deviceSize)** deprecated, wrapper around calculatePageSize().
+- **uint32_t getLastWrite()** returns timestamp in millis since start of program.
 - **uint32_t determineSizeNoWrite()** function that determines the size of the EEPROM 
 by detecting when a selected memory address is not readable. (new in 1.8.1).
 - **uint32_t determineSize(bool debug = false)**
@@ -280,11 +316,10 @@ The library does not offer multiple EEPROMS as one continuous storage device.
 
 #### Should
 
-- investigate multi-EEPROM storage
-  - wrapper class?
-- improve error handling, 
-  - write functions should return bytes written or so.
-- make deviceSize explicit in examples?
+- investigate multi-EEPROM storage ==> wrapper class!
+- improve error handling
+- write functions should return bytes written (like Print() does)
+- remove uint8_t getPageSize(uint32_t deviceSize) in 0.2.0. deprecated.
 
 #### Could
 
@@ -292,7 +327,7 @@ The library does not offer multiple EEPROMS as one continuous storage device.
   => find first and last changed position could possibly result in less writes.
 - can **setBlock()** use strategies from **updateBlock()**
 - **pageBlock()**: incrBuffer is an implementation name, not a functional name.
-
+- replace defines with const uint8_t / const uint16_t to force type checking?
 
 #### Wont
 
