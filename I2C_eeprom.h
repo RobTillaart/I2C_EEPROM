@@ -74,17 +74,17 @@ public:
     * It will try to guess page size and address word size based on the size of the device.
     *
     * @param deviceAddress Byte address of the device.
-    * @param deviceSize    Max size in bytes of the device (divide your device size in Kbits by 8)
+    * @param deviceSize    Max size in bytes of the device (divide your device size in Kbits by 8 to get Kbytes)
     * @param wire          Select alternative Wire interface
     */
   I2C_eeprom(const uint8_t deviceAddress, const uint32_t deviceSize, TwoWire *wire = &Wire);
 
-  //  use default I2C pins.
   bool     begin(int8_t writeProtectPin = -1);
   bool     isConnected();
   uint8_t  getAddress();
 
 
+  //  user is responsible that address is in range of the EEPROM used.
   //  writes a byte to memoryAddress
   //  returns I2C status, 0 = OK
   int      writeByte(const uint16_t memoryAddress, const uint8_t value);
@@ -123,13 +123,13 @@ public:
 
 
   //  Meta data functions
-  uint32_t determineSize(const bool debug = false);
-  uint32_t determineSizeNoWrite();
   uint32_t getDeviceSize();
   uint8_t  getPageSize();
   uint8_t  calculatePageSize(uint32_t deviceSize);
   [[deprecated("Use calculatePageSize(deviceSize) instead.")]]
   uint8_t  getPageSize(uint32_t deviceSize);
+  uint32_t determineSizeNoWrite();
+  uint32_t determineSize(const bool debug = false);
   uint32_t getLastWrite();
 
 

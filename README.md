@@ -77,7 +77,7 @@ The user has to call **Wire.begin()** and can optionally set the Wire pins
 
 I2C address = 0x50 .. 0x57 depending on three address lines (A0, A1, A2).
 
-Read the datasheet, section device addressing.
+Read the datasheet of your specific EEPROM, section device addressing.
 
 
 ### I2C multiplexing
@@ -113,8 +113,8 @@ Most important difference is 32 bit memory addresses.
 ### Constructor
 
 - **I2C_eeprom(uint8_t deviceAddress, TwoWire \*wire = &Wire)** constructor, 
-optional Wire interface. The default deviceSize == I2C_DEVICESIZE_24LC256 (32KB), 
-which is the most often used I2C_EEPROM size.
+optional Wire interface. The deviceSize == I2C_DEVICESIZE_24LC256 (32KB) is used
+as it is the most often used I2C_EEPROM size.
 Be aware that if you use other sized EEPROMs you have to use the next constructor,
 and name the deviceSize explicitly, otherwise errors might occur.
 - **I2C_eeprom(uint8_t deviceAddress, uint32_t deviceSize, TwoWire \*wire = &Wire)** 
@@ -196,13 +196,13 @@ The user is responsible that the used buffer can hold length bytes.
 - **bool updateByteVerify(uint16_t memoryAddress, uint8_t value)**
 - **bool updateBlockVerify(uint16_t memoryAddress, uint8_t \* buffer, uint16_t length)**
 - **bool verifyBlock(uint16_t memoryAddress, uint8_t \* buffer, uint16_t length)**
-Returns true is buffer equals memoryAddres for length bytes.
+Returns true is buffer equals memoryAddress for length bytes.
 
 
 ### Other
 
-- **uint32_t getDeviceSize()** idem
-- **uint8_t  getPageSize()** idem
+- **uint32_t getDeviceSize()** returns the current set deviceSize.
+- **uint8_t  getPageSize()** returns the current set pageSize.
 - **uint8_t  calculatePageSize(uint32_t deviceSize)** calculates the pageSize of a device
 with deviceSize. Note it does not set the pageSize!
 -- **uint8_t  getPageSize(uint32_t deviceSize)** deprecated, wrapper around calculatePageSize().
@@ -318,8 +318,10 @@ The library does not offer multiple EEPROMS as one continuous storage device.
 
 - investigate multi-EEPROM storage ==> wrapper class!
 - improve error handling
-- write functions should return bytes written (like Print() does)
-- remove uint8_t getPageSize(uint32_t deviceSize) in 0.2.0. deprecated.
+  - address range check in begin
+  - write functions should return bytes written (like Print() does)
+    now they return I2C status... => error / status.
+- remove uint8_t getPageSize(uint32_t deviceSize) in 0.2.0. now deprecated.
 
 #### Could
 
@@ -328,6 +330,7 @@ The library does not offer multiple EEPROMS as one continuous storage device.
 - can **setBlock()** use strategies from **updateBlock()**
 - **pageBlock()**: incrBuffer is an implementation name, not a functional name.
 - replace defines with const uint8_t / const uint16_t to force type checking?
+- sync order .h file and readme.md.
 
 #### Wont
 
