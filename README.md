@@ -17,14 +17,14 @@ Arduino Library for external I2C EEPROM - 24LC512, 24LC256, 24LC64/32/16/08/04/0
 
 ## Description
 
-This library is to access the external I2C EEPROM up to 64KB (= 512 Kbit) in size.
-MicroChip 24LC512, 24LC256, 24LC64, 24LC32, 24LC16, 24LC08, 24LC04, 24LC02, 24LC01 and equivalents.
+This library is used to access an external I2C EEPROM up to 64KB (= 512 Kbit) in size.
+The MicroChip 24LC512, 24LC256, 24LC64, 24LC32, 24LC16, 24LC08, 24LC04, 24LC02, 24LC01 
+and equivalents are tested and working.
 
 Also confirmed working M24512-W, M24512-R, M24512-DF (See #68). 
-Not supported is the identification page functions.
+Not supported are the identification page functions.
 
 The **I2C_eeprom_cyclic_store** interface is documented [here](README_cyclic_store.md)
-
 
 **Warning** 
 
@@ -35,23 +35,24 @@ the address used will probably be memoryAddress % deviceSize.
 
 ### RP2040
 
-There are at least two boards modules for the RP2040 that use a different Wire libraries. 
+There are at least two boards modules for the RP2040 that use different Wire libraries. 
 One from "Earle F. Philhower" and an "MBED" one. See issues #53 and #55 for details.
-
 In 1.7.3 defines are checked to select between these two and as far as tested this seems
 to solve the issue #53 while being backwards compatible.
 If a better solution is found, it will be implemented.
 
 
-### Breaking change
+### Breaking change 1.9.0
 
 Version 1.9.0 fixed a memory leak in **verifyBlock()**.
+
+### Breaking change 1.8.0
 
 Version 1.8.0 introduced a breaking change.
 You cannot set the I2C pins in **begin()** any more.
 This reduces the dependency of processor dependent Wire (I2C) implementations.
 The user has to call **Wire.begin()** and can optionally set the Wire pins 
-(if the processor supports this), before calling **I2C_eeprom.begin()**.
+(if the board supports this), before calling **I2C_eeprom.begin()**.
 
 
 ### Related
@@ -62,6 +63,8 @@ The user has to call **Wire.begin()** and can optionally set the Wire pins
 
 
 ## Schematic
+
+Verify the datasheet for your specific EEPROM.
 
 ```cpp
               +---U---+
@@ -107,21 +110,22 @@ too if they are behind the multiplexer.
 The interface is kept quite identical to the I2C_24LC1025 library.
 https://github.com/RobTillaart/I2C_24LC1025
 
-Most important difference is 32 bit memory addresses.
+Most important difference is that the latter uses 32 bit memory addresses.
 
 
 ### Constructor
 
-- **I2C_eeprom(uint8_t deviceAddress, TwoWire \*wire = &Wire)** constructor, 
-optional Wire interface. The deviceSize == I2C_DEVICESIZE_24LC256 (32KB) is used
-as it is the most often used I2C_EEPROM size.
+- **I2C_eeprom(uint8_t deviceAddress, TwoWire \*wire = &Wire)** constructor, to set the 
+device address and optional Wire interface. The deviceSize == I2C_DEVICESIZE_24LC256 (32KB) 
+is used as it is the most often used I2C_EEPROM size.
 Be aware that if you use other sized EEPROMs you have to use the next constructor,
 and name the deviceSize explicitly, otherwise errors might occur.
 - **I2C_eeprom(uint8_t deviceAddress, uint32_t deviceSize, TwoWire \*wire = &Wire)** 
-constructor, the deviceSize can be any of the defines below or its number equivalent.
+constructor, idem as above, furthermore the deviceSize can be any of the defines in the 
+table below or its number equivalent.
 The Wire interface is optional, default Wire.
 - **bool begin(uint8_t writeProtectPin = -1)** Optionally one can set the **WP**
-writeProtect pin. (see section below). If defined, it is initialized.
+writeProtect pin. (see section below).
 If the **WP** pin is defined, the default behaviour will be to **not** allow writing.
 Furthermore it checks if the deviceAddress given in the constructor is available 
 on the defined I2C bus.
@@ -132,7 +136,7 @@ available on the defined I2C bus.
 Convenience.
 
 
-Defined device sizes for constructor, more details see below
+Defined device sizes for constructor, more details see below.
 
 |  Define                  |  bytes  |  Notes  |
 |:-------------------------|--------:|:--------|
@@ -205,7 +209,7 @@ Returns true is buffer equals memoryAddress for length bytes.
 - **uint8_t  getPageSize()** returns the current set pageSize.
 - **uint8_t  calculatePageSize(uint32_t deviceSize)** calculates the pageSize of a device
 with deviceSize. Note it does not set the pageSize!
--- **uint8_t  getPageSize(uint32_t deviceSize)** deprecated, wrapper around calculatePageSize().
+- **uint8_t  getPageSize(uint32_t deviceSize)** deprecated, wrapper around calculatePageSize().
 - **uint32_t getLastWrite()** returns timestamp in millis since start of program.
 - **uint32_t determineSizeNoWrite()** function that determines the size of the EEPROM 
 by detecting when a selected memory address is not readable. (new in 1.8.1).
@@ -213,8 +217,7 @@ by detecting when a selected memory address is not readable. (new in 1.8.1).
 function that determines the size of the EEPROM by detecting when a memory address 
 is folded upon memory address 0.
 It is based upon the observation that memory wraps around.
-The debug flag prints some output to Serial.
-
+The debug flag prints some output to Serial.  
 **Warning**: this function has changed (again) in 1.4.0
 
 Test results **determineSize()**
@@ -252,7 +255,7 @@ The function **updateBlock()** reads the block of data and compares it with the 
 
 As the function reads/writes the data in blocks with a maximum length of **I2C_TWIBUFFERSIZE** 
 (== 30 AVR limitation; 128 for ESP32) 
-It does this comparison in chunks if the length exceeds this number.
+It does this comparison in chunks if the length exceeds the length of the I2C buffer.
 The result is that an **updateBlock()** call can result e.g. in 4 reads and only 2 writes under the hood.
 
 If data is changed often between writes, **updateBlock()** is slower than **writeBlock()**.
