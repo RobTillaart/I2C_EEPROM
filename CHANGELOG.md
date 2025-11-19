@@ -6,6 +6,11 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 
+## [1.9.5] - 2025-11-19
+- add examples
+- improve build efficiency (only one example with 5 boards)
+
+
 ## [1.9.4] - 2025-08-27
 - fix #83, update readme.md (thanks to TonyRiddiough)
 - add calculatePageSize(deviceSize) to replace getPageSize(deviceSize) prep.
