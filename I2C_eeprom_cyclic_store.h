@@ -11,10 +11,10 @@
 #include <I2C_eeprom.h>
 
 /**
- * @brief This is a utility class for using an eeprom to store a simple
+ * @brief This is a utility class for using an EEPROM to store a simple
  * data structure.
  *
- * The purpose of the utility is to extend the life of an eeprom memory by
+ * The purpose of the utility is to extend the life of an EEPROM memory by
  * rotating the writes over different pages to reduce the number of writes
  * to any individual page.
  * It does this by partitioning the memory into slots (of continuous pages)
@@ -27,11 +27,11 @@
  * slot in sequence is used (or the first slot if going past the end).
  *
  * Note that the data is stored in binary form which means it should not be
- * expected that the eeprom can be moved between architectures. Data stored
- * in an eeprom will also become invalid if the data structure is changed
+ * expected that the EEPROM can be moved between architectures. Data stored
+ * in an EEPROM will also become invalid if the data structure is changed
  * either manually or due to changed optimization settings.
  *
- * If the data structure has changed or if the eeprom contains other data it
+ * If the data structure has changed or if the EEPROM contains other data it
  * must first be formatted with a call to format().
  *
  * Finally, since the version number is a long word, this class will
@@ -48,7 +48,7 @@ public:
     /**
       * @brief Initializes the instance
       *
-      * This call searches the eeprom for the latest written version and
+      * This call searches the EEPROM for the latest written version and
       * sets the current slot accordingly.
       *
       * @param eeprom  The instance of I2C_eeprom to use.
@@ -70,15 +70,15 @@ public:
     };
 
     /**
-      * @brief Formats the eeprom
+      * @brief Formats the EEPROM
       *
-      * This must be done if the eeprom already contains data or if the
+      * This must be done if the EEPROM already contains data or if the
       * structure of the data stored changes.
       *
       * Formatting is done by writing the max version number to each slot,
       * thus it performs a write cycle to the first write page of each slot.
       *
-      * @return True if successful or false if unable to write to eeprom.
+      * @return True if successful or false if unable to write to EEPROM.
       */
     bool format()
     {
@@ -99,9 +99,9 @@ public:
     }
 
     /**
-      * @brief Read data from the eeprom into a buffer.
+      * @brief Read data from the EEPROM into a buffer.
       *
-      * The data is read from the current slot of the eeprom.
+      * The data is read from the current slot of the EEPROM.
       *
       * @param buffer A reference to the buffer to read data into.
       * @return True if data was read successfully, false otherwise.
@@ -109,11 +109,11 @@ public:
     bool read(T &buffer) const { return read(&buffer); }
 
     /**
-      * @brief Read data from the eeprom into a buffer.
+      * @brief Read data from the EEPROM into a buffer.
       *
-      * The data is read from the current slot of the eeprom.
+      * The data is read from the current slot of the EEPROM.
       *
-      * @param buffer A pointet to the buffer to read data into.
+      * @param buffer A pointer to the buffer to read data into.
       * @return True if data was read successfully, false otherwise.
       */
     bool read(T *buffer) const
@@ -128,7 +128,7 @@ public:
     }
 
     /**
-      * @brief Write a buffer to the next slot in the eeprom.
+      * @brief Write a buffer to the next slot in the EEPROM.
       *
       * This updates the current slot of this instance.
       *
@@ -138,7 +138,7 @@ public:
     bool write(T &buffer) { return write(&buffer); }
 
     /**
-      * Write data of object to the next slot in the eeprom. This updates
+      * Write data of object to the next slot in the EEPROM. This updates
       * the current slot of the instance.
       *
       * @param buffer A pointer to the buffer to write data from.
@@ -161,7 +161,7 @@ public:
             _currentSlot++;
             _currentVersion++;
 
-            // Wrap around to start if going past end of alotted region
+            // Wrap around to start if going past end of allocated region
             uint16_t maxSlots = _totalPages / _bufferPages;
             if (_currentSlot >= maxSlots)
                 _currentSlot = 0;
@@ -182,14 +182,14 @@ public:
     }
 
     /**
-      * @brief Returns metrics for the eeprom usage.
+      * @brief Returns metrics for the EEPROM usage.
       *
       * Dividing the returned values of \p writeCounter with \p slots yields the average number of
-      * writes to the individual write pages of the eeprom. This can be used to estimate the remaining
+      * writes to the individual write pages of the EEPROM. This can be used to estimate the remaining
       * number of possible writes.
       *
       * @param[out] slots The number of slots used to write the data buffer.
-      * @param[out] writeCounter The total number of write to the eeprom since the last format (or first use).
+      * @param[out] writeCounter The total number of write to the EEPROM since the last format (or first use).
       * @return True if the instance is initialized, false otherwise.
       */
     bool getMetrics(uint16_t &slots, uint32_t &writeCounter)
@@ -220,8 +220,8 @@ private:
         auto slotSize = _pageSize * _bufferPages;
 
         startSlot = 0;
-        endSlot = (_totalPages / _bufferPages) - 1;          // Index of last slot
-        probeSlot = startSlot + ((endSlot - startSlot) / 2); // Midway between start and end
+        endSlot = (_totalPages / _bufferPages) - 1;           //  Index of last slot
+        probeSlot = startSlot + ((endSlot - startSlot) / 2);  //  Midway between start and end
 
         if(_eeprom->readBlock(0, (uint8_t *)&current, sizeof(current)) != sizeof(current))
         {

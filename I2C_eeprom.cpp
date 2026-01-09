@@ -1,7 +1,7 @@
 //
 //    FILE: I2C_eeprom.cpp
 //  AUTHOR: Rob Tillaart
-// VERSION: 1.9.3
+// VERSION: 1.9.5
 // PURPOSE: Arduino Library for external I2C EEPROM 24LC256 et al.
 //     URL: https://github.com/RobTillaart/I2C_EEPROM
 
@@ -78,6 +78,17 @@ bool I2C_eeprom::isConnected()
 uint8_t I2C_eeprom::getAddress()
 {
   return _deviceAddress;
+}
+
+
+uint16_t I2C_eeprom::partition(uint16_t offset, uint16_t size)
+{
+  //  issue #86
+  //  TODO verify within range
+  //  else error
+  _partitionOffset = offset;
+  _partitionSize   = size;
+  return offset + size;
 }
 
 
@@ -606,13 +617,19 @@ void I2C_eeprom::_beginTransmission(const uint16_t memoryAddress)
 //  returns 0 = OK otherwise error
 int I2C_eeprom::_WriteBlock(const uint16_t memoryAddress, const uint8_t * buffer, const uint16_t length)
 {
+  //  #86 - check range
+  //  if (_partitionSize && ((memoryAddress + length) > _partitionSize))
+  //  {
+  //    return ERROR
+  //  }
   _waitEEReady();
   if (_autoWriteProtect)
   {
     digitalWrite(_writeProtectPin, LOW);
   }
 
-  this->_beginTransmission(memoryAddress);
+  //  #86
+  this->_beginTransmission(memoryAddress + _partitionOffset);
   _wire->write(buffer, length);
   int rv = _wire->endTransmission();
 
@@ -644,9 +661,15 @@ int I2C_eeprom::_WriteBlock(const uint16_t memoryAddress, const uint8_t * buffer
 //  returns bytes read
 uint8_t I2C_eeprom::_ReadBlock(const uint16_t memoryAddress, uint8_t * buffer, const uint16_t length)
 {
+  //  #86 - check range
+  //  if (_partitionSize && ((memoryAddress + length) > _partitionSize))
+  //  {
+  //    return ERROR
+  //  }
   _waitEEReady();
 
-  this->_beginTransmission(memoryAddress);
+  //  #86
+  this->_beginTransmission(memoryAddress + _partitionOffset);
   int rv = _wire->endTransmission();
   if (rv != 0)
   {
@@ -668,7 +691,9 @@ uint8_t I2C_eeprom::_ReadBlock(const uint16_t memoryAddress, uint8_t * buffer, c
   }
   else
   {
-    uint8_t address = _deviceAddress | ((memoryAddress >> 8) & 0x07);
+    //  #86
+    //  uint8_t partialAddr =
+    uint8_t address = _deviceAddress | (((memoryAddress + _partitionOffset)>> 8) & 0x07);
     readBytes = _wire->requestFrom((int)address, (int)length);
   }
   yield();     //  For OS scheduling
@@ -685,9 +710,14 @@ uint8_t I2C_eeprom::_ReadBlock(const uint16_t memoryAddress, uint8_t * buffer, c
 //  returns true if equal.
 bool I2C_eeprom::_verifyBlock(const uint16_t memoryAddress, const uint8_t * buffer, const uint16_t length)
 {
+  //  #86 - check range
+  //  if (_partitionSize && ((memoryAddress + length) > _partitionSize))
+  //  {
+  //    return ERROR
+  //  }
   _waitEEReady();
-
-  this->_beginTransmission(memoryAddress);
+  //  #86
+  this->_beginTransmission(memoryAddress + _partitionOffset);
   int rv = _wire->endTransmission();
   if (rv != 0)
   {
@@ -709,7 +739,9 @@ bool I2C_eeprom::_verifyBlock(const uint16_t memoryAddress, const uint8_t * buff
   }
   else
   {
-    uint8_t address = _deviceAddress | ((memoryAddress >> 8) & 0x07);
+    //  #86
+    //  uint8_t partialAddr = 
+    uint8_t address = _deviceAddress | (((memoryAddress + _partitionOffset)>> 8) & 0x07);
     readBytes = _wire->requestFrom((int)address, (int)length);
   }
   yield();     //  For OS scheduling

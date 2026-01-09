@@ -2,7 +2,7 @@
 //
 //    FILE: I2C_eeprom.h
 //  AUTHOR: Rob Tillaart
-// VERSION: 1.9.4
+// VERSION: 1.9.5
 // PURPOSE: Arduino Library for external I2C EEPROM 24LC256 et al.
 //     URL: https://github.com/RobTillaart/I2C_EEPROM
 
@@ -11,7 +11,7 @@
 #include "Wire.h"
 
 
-#define I2C_EEPROM_VERSION          (F("1.9.4"))
+#define I2C_EEPROM_VERSION          (F("1.9.5"))
 
 #define I2C_DEVICESIZE_24LC512      65536
 #define I2C_DEVICESIZE_24LC256      32768
@@ -34,7 +34,7 @@
 #endif
 
 
-//  set the flag EN_AUTO_WRITE_PROTECT to 1 to enable the Write Control at compile time 
+//  set the flag EN_AUTO_WRITE_PROTECT to 1 to enable the Write Control at compile time
 //  used if the write_protect pin is explicitly set in the begin() function.
 //  the flag can be set as command line option.
 #ifndef EN_AUTO_WRITE_PROTECT
@@ -82,6 +82,8 @@ public:
   bool     begin(int8_t writeProtectPin = -1);
   bool     isConnected();
   uint8_t  getAddress();
+
+  uint16_t partition(uint16_t offset, uint16_t size);
 
 
   //  user is responsible that address is in range of the EEPROM used.
@@ -161,6 +163,9 @@ private:
   uint32_t _deviceSize = 0;
   uint8_t  _pageSize   = 0;
   uint8_t  _extraTWR   = 0;  //  milliseconds
+
+  uint16_t _partitionOffset = 0;
+  uint16_t _partitionSize   = 0;
 
 
   //  24LC32..24LC512 use two bytes for memory address

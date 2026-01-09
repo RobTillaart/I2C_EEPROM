@@ -7,9 +7,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 
 ## [1.9.5] - 2025-11-19
+- update documentation
+- update GitHub actions
 - add examples
 - improve build efficiency (only one example with 5 boards)
-
+- minor edits
 
 ## [1.9.4] - 2025-08-27
 - fix #83, update readme.md (thanks to TonyRiddiough)
