@@ -83,11 +83,18 @@ uint8_t I2C_eeprom::getAddress()
 
 uint16_t I2C_eeprom::partition(uint16_t offset, uint16_t size)
 {
-  //  issue #86
-  //  TODO verify within range
-  //  else error
+  //  #86
+  //  verify partition is within EEPROM
+  uint32_t tmp = offset;
+  tmp += size;
+  if (tmp >= deviceSize)
+  {
+    return 0;  //  ?
+  }
+  //  remember
   _partitionOffset = offset;
   _partitionSize   = size;
+  //  return endAddress ==> next partition address.
   return offset + size;
 }
 
@@ -618,9 +625,11 @@ void I2C_eeprom::_beginTransmission(const uint16_t memoryAddress)
 int I2C_eeprom::_WriteBlock(const uint16_t memoryAddress, const uint8_t * buffer, const uint16_t length)
 {
   //  #86 - check range
-  //  if (_partitionSize && ((memoryAddress + length) > _partitionSize))
+  //  uint32_t tmp = memoryAddress;
+  //  tmp += length;
+  //  if (tmp > _partitionSize)
   //  {
-  //    return ERROR
+  //    return -999;
   //  }
   _waitEEReady();
   if (_autoWriteProtect)
@@ -744,7 +753,7 @@ bool I2C_eeprom::_verifyBlock(const uint16_t memoryAddress, const uint8_t * buff
     uint8_t address = _deviceAddress | (((memoryAddress + _partitionOffset)>> 8) & 0x07);
     readBytes = _wire->requestFrom((int)address, (int)length);
   }
-  yield();     //  For OS scheduling
+  yield();  //  For OS scheduling
   uint8_t count = 0;
   while (count < readBytes)
   {
@@ -766,11 +775,7 @@ void I2C_eeprom::_waitEEReady()
   while ((micros() - _lastWrite) <= waitTime)
   {
     if (isConnected()) return;
-    //  TODO remove pre 1.7.4 code
-    //  _wire->beginTransmission(_deviceAddress);
-    //  int x = _wire->endTransmission();
-    //  if (x == 0) return;
-    yield();     //  For OS scheduling
+    yield();  //  For OS scheduling
   }
   return;
 }

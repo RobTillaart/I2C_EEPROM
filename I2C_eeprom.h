@@ -164,6 +164,7 @@ private:
   uint8_t  _pageSize   = 0;
   uint8_t  _extraTWR   = 0;  //  milliseconds
 
+  //  #86
   uint16_t _partitionOffset = 0;
   uint16_t _partitionSize   = 0;
 

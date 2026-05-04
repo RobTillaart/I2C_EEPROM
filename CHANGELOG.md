@@ -6,11 +6,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 
-## [1.9.5] - 2025-11-19
+## [1.9.5] - 2026-01-20
+- fix #86, add partition() command
 - update documentation
 - update GitHub actions
-- add examples
-- improve build efficiency (only one example with 5 boards)
+- add examples eeprom_compare.ino and eeprom_copy.ino
+- improve build-CI efficiency (only one example with 5 boards)
 - minor edits
 
 ## [1.9.4] - 2025-08-27

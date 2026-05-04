@@ -60,6 +60,7 @@ The user has to call **Wire.begin()** and can optionally set the Wire pins
 - https://github.com/RobTillaart/I2C_24LC1025
 - https://github.com/RobTillaart/I2C_CAT24M01
 - https://github.com/RobTillaart/I2C_EEPROM
+- https://github.com/RobTillaart/I2C_FRAM_I2C - alternative for EEPROM
 
 
 ## Schematic
@@ -338,7 +339,7 @@ The library does not offer multiple EEPROMS as one continuous storage device.
 #### Wont
 
 - investigate the print interface?
-  - circular buffer? (see FRAM library)
+  - circular buffer? (see FRAM library) - wear and tear risk?
   - dump function?
 
 
