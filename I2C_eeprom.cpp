@@ -87,7 +87,7 @@ uint16_t I2C_eeprom::partition(uint16_t offset, uint16_t size)
   //  verify partition is within EEPROM
   uint32_t tmp = offset;
   tmp += size;
-  if (tmp >= deviceSize)
+  if (tmp >= _deviceSize)
   {
     return 0;  //  ?
   }
