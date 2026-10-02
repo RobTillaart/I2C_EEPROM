@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - update GitHub actions
 - add examples eeprom_compare.ino and eeprom_copy.ino
 - improve build-CI efficiency (only one example with 5 boards)
+- fix frameworks in library.json
 - minor edits
 
 ## [1.9.4] - 2025-08-27
